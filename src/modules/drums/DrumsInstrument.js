@@ -8,7 +8,9 @@ export default class DrumInstrument {
     this.masterGain = ctx.createGain();
     this.masterGain.connect(masterGain);
 
-    this.sounds = {
+    this.soundNames = ['kick'];
+
+    this.generators = {
       kick: () => {
         const attack = 10;
         const hold = 50;
@@ -50,5 +52,9 @@ export default class DrumInstrument {
         }, attack + hold);
       },
     };
+  }
+
+  trigger(soundName) {
+    this.generators[soundName]();
   }
 }

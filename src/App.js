@@ -4,9 +4,8 @@ import Drums from './modules/drums';
 class App extends Component {
   ticker = null;
   state = {
-    sequence: 0,
-    sequenceCount: 8,
-    sequenceActive: false,
+    step: 0,
+    active: false,
   };
 
   componentDidMount() {
@@ -14,8 +13,8 @@ class App extends Component {
     this.ticker = ticker;
 
     ticker.onTick = () => {
-      this.setState(({ sequence, sequenceCount }) => ({
-        sequence: (sequence + 1) % sequenceCount,
+      this.setState(({ step }) => ({
+        step: step + 1,
       }));
     };
   }
@@ -23,8 +22,8 @@ class App extends Component {
   startSequence = () => {
     this.setState(
       () => ({
-        sequence: -1,
-        sequenceActive: true,
+        step: -1,
+        active: true,
       }),
       () => {
         this.ticker.start();
@@ -35,7 +34,7 @@ class App extends Component {
   stopSequence = () => {
     this.setState(
       () => ({
-        sequenceActive: false,
+        active: false,
       }),
       () => {
         this.ticker.stop();
@@ -44,14 +43,14 @@ class App extends Component {
   };
 
   render() {
-    const { sequence } = this.state;
+    const { step, active } = this.state;
     const { audioMixer } = this.props;
     return (
       <div>
         <button onMouseDown={this.startSequence}>Start</button>
         <button onMouseDown={this.stopSequence}>Stop</button>
         <div>{this.state.sequenceActive ? 'on' : 'off'}</div>
-        <Drums sequence={sequence} audioMixer={audioMixer} />
+        <Drums step={step} audioMixer={audioMixer} active={active} />
       </div>
     );
   }
