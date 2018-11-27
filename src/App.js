@@ -49,6 +49,7 @@ class App extends Component {
       <div>
         <button onMouseDown={this.startSequence}>Start</button>
         <button onMouseDown={this.stopSequence}>Stop</button>
+        <button onMouseDown={() => this.props.audioMixer.beep()}>beep</button>
         <div>{this.state.sequenceActive ? 'on' : 'off'}</div>
         <Drums sequence={sequence} />
       </div>
