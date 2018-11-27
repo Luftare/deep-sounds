@@ -1,3 +1,5 @@
+const resolution = 4;
+
 export default class Ticker {
   BPM = 120;
   onTick = () => {};
@@ -5,11 +7,11 @@ export default class Ticker {
   timeoutId = 0;
 
   getIntervalTime() {
-    return 60000 / this.BPM;
+    return 60000 / this.BPM / resolution;
   }
 
   setIntervalTime(time) {
-    this.bpm = 60000 / time;
+    this.bpm = 60000 / time / resolution;
   }
 
   getBPM() {

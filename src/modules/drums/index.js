@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Step, Sequence, Container } from './components';
+import { Step, Sequence, Container, SequenceLabel, Track } from './components';
 import DrumInstrument from './DrumsInstrument';
 
 const INIT_SEQUENCE_LENGTH = 8;
@@ -20,32 +20,68 @@ export default class Drums extends Component {
     };
   }
 
+  toggleStep = (sequenceIndex, stepIndex) => {
+    this.setState(({ sequences }) => ({
+      sequences: sequences.map((sequence, sequenceIterationIndex) =>
+        sequenceIterationIndex === sequenceIndex
+          ? sequence.map((step, stepIterationIndex) =>
+              stepIterationIndex === stepIndex ? !step : step
+            )
+          : sequence
+      ),
+    }));
+  };
+
   getSnapshotBeforeUpdate(prevProps) {
     const nextSequenceStepReceived =
       prevProps.step !== this.props.step && this.props.step >= 0;
 
     if (nextSequenceStepReceived) {
-      this.drumInstrument.trigger('kick');
+      this.handleNewStep();
     }
     return null;
   }
 
+  handleNewStep() {
+    const step = this.getLocalStep();
+    this.drumInstrument.soundNames.forEach((soundName, sequenceIndex) => {
+      const isActive = this.state.sequences[sequenceIndex][step];
+      if (isActive) {
+        this.drumInstrument.trigger(soundName);
+      }
+    });
+  }
+
   componentDidUpdate() {}
 
-  render() {
-    const { active, step } = this.props;
-    const { sequences, sequenceLength } = this.state;
+  getLocalStep() {
+    return this.props.step % this.state.sequenceLength;
+  }
 
-    const currentStep = step % sequenceLength;
+  render() {
+    const { active } = this.props;
+    const { sequences } = this.state;
+
+    const currentStep = this.getLocalStep();
 
     return (
       <Container>
-        {sequences.map(sequence => (
-          <Sequence key={keyGenerator++}>
-            {sequence.map((step, i) => (
-              <Step key={keyGenerator++} active={i === currentStep && active} />
-            ))}
-          </Sequence>
+        {sequences.map((sequence, sequenceIndex) => (
+          <Track key={keyGenerator++}>
+            <SequenceLabel>
+              {this.drumInstrument.soundNames[sequenceIndex]}
+            </SequenceLabel>
+            <Sequence>
+              {sequence.map((stepActive, stepIndex) => (
+                <Step
+                  key={keyGenerator++}
+                  active={stepActive}
+                  isCurrent={stepIndex === currentStep && active}
+                  onMouseDown={() => this.toggleStep(sequenceIndex, stepIndex)}
+                />
+              ))}
+            </Sequence>
+          </Track>
         ))}
       </Container>
     );
