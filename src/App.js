@@ -6,6 +6,7 @@ class App extends Component {
   state = {
     sequence: 0,
     sequenceCount: 8,
+    sequenceActive: false,
   };
 
   componentDidMount() {
@@ -23,6 +24,7 @@ class App extends Component {
     this.setState(
       () => ({
         sequence: -1,
+        sequenceActive: true,
       }),
       () => {
         this.ticker.start();
@@ -31,7 +33,14 @@ class App extends Component {
   };
 
   stopSequence = () => {
-    this.ticker.stop();
+    this.setState(
+      () => ({
+        sequenceActive: false,
+      }),
+      () => {
+        this.ticker.stop();
+      }
+    );
   };
 
   render() {
@@ -40,6 +49,7 @@ class App extends Component {
       <div>
         <button onMouseDown={this.startSequence}>Start</button>
         <button onMouseDown={this.stopSequence}>Stop</button>
+        <div>{this.state.sequenceActive ? 'on' : 'off'}</div>
         <Drums sequence={sequence} />
       </div>
     );
