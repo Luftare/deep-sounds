@@ -1,27 +1,27 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Drums from './modules/drums';
 
 class App extends Component {
+  state = {
+    sequence: 0,
+    sequenceCount: 8,
+  };
+
+  componentDidMount() {
+    const { ticker } = this.props;
+
+    ticker.onTick = () => {
+      this.setState(({ sequence, sequenceCount }) => ({
+        sequence: (sequence + 1) % sequenceCount,
+      }));
+    };
+
+    ticker.start();
+  }
+
   render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+    const { sequence } = this.state;
+    return <Drums sequence={sequence} />;
   }
 }
 
