@@ -4,8 +4,9 @@ export default class Drums extends Component {
   getSnapshotBeforeUpdate(prevProps) {
     const nextSequenceStepReceived =
       prevProps.sequence !== this.props.sequence && this.props.sequence >= 0;
+
     if (nextSequenceStepReceived) {
-      // play note at sequence this.props.sequence
+      this.props.audioMixer.beep();
     }
     return null;
   }

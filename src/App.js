@@ -45,13 +45,13 @@ class App extends Component {
 
   render() {
     const { sequence } = this.state;
+    const { audioMixer } = this.props;
     return (
       <div>
         <button onMouseDown={this.startSequence}>Start</button>
         <button onMouseDown={this.stopSequence}>Stop</button>
-        <button onMouseDown={() => this.props.audioMixer.beep()}>beep</button>
         <div>{this.state.sequenceActive ? 'on' : 'off'}</div>
-        <Drums sequence={sequence} />
+        <Drums sequence={sequence} audioMixer={audioMixer} />
       </div>
     );
   }

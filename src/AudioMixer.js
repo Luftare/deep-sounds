@@ -3,7 +3,7 @@ export default class AudioMixer {
     const ctx = new AudioContext();
     const masterGain = ctx.createGain();
 
-    masterGain.gain.value = 0.3;
+    masterGain.gain.value = 0.1;
 
     masterGain.connect(ctx.destination);
 
