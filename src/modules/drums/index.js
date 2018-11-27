@@ -14,7 +14,7 @@ export default class Drums extends Component {
       prevProps.sequence !== this.props.sequence && this.props.sequence >= 0;
 
     if (nextSequenceStepReceived) {
-      this.drumInstrument.trigger('kick');
+      this.drumInstrument.sounds.kick();
     }
     return null;
   }
