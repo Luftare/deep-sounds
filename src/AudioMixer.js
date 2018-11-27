@@ -10,15 +10,4 @@ export default class AudioMixer {
     this.ctx = ctx;
     this.masterGain = masterGain;
   }
-
-  beep() {
-    const { ctx, masterGain } = this;
-    const osc = ctx.createOscillator();
-    osc.frequency.value = 200;
-    osc.connect(masterGain);
-    osc.start();
-    setTimeout(() => {
-      osc.stop();
-    }, 200);
-  }
 }
