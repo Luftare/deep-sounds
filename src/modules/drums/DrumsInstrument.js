@@ -23,29 +23,30 @@ function createNoiseNode(buffer, ctx) {
 
 export default class DrumInstrument {
   constructor({ ctx, destination }) {
-    this.noiseBuffer = createNoiseBuffer(ctx);
+    const noiseBuffer = createNoiseBuffer(ctx);
 
-    this.masterGain = ctx.createGain();
-    this.masterGain.connect(destination);
+    const masterGain = ctx.createGain();
+    masterGain.connect(destination);
 
     this.sounds = [
       {
         label: 'Closed hihat',
+        level: 1,
         muted: false,
-        trigger: () => {
+        trigger() {
           const release = 100;
 
           const env = ctx.createGain();
-          const noise = createNoiseNode(this.noiseBuffer, ctx);
+          const noise = createNoiseNode(noiseBuffer, ctx);
           const highPassFilter = ctx.createBiquadFilter();
 
-          env.gain.value = 1;
+          env.gain.value = this.level;
           highPassFilter.type = 'highpass';
           highPassFilter.frequency.value = 8000;
 
           noise.connect(highPassFilter);
           highPassFilter.connect(env);
-          env.connect(this.masterGain);
+          env.connect(masterGain);
 
           noise.start();
 
@@ -63,21 +64,22 @@ export default class DrumInstrument {
       },
       {
         label: 'Open hihat',
+        level: 1,
         muted: false,
-        trigger: () => {
+        trigger() {
           const release = 500;
 
           const env = ctx.createGain();
-          const noise = createNoiseNode(this.noiseBuffer, ctx);
+          const noise = createNoiseNode(noiseBuffer, ctx);
           const highPassFilter = ctx.createBiquadFilter();
 
-          env.gain.value = 1;
+          env.gain.value = this.level;
           highPassFilter.type = 'highpass';
           highPassFilter.frequency.value = 6000;
 
           noise.connect(highPassFilter);
           highPassFilter.connect(env);
-          env.connect(this.masterGain);
+          env.connect(masterGain);
 
           noise.start();
 
@@ -95,8 +97,9 @@ export default class DrumInstrument {
       },
       {
         label: 'Snare',
+        level: 0.8,
         muted: false,
-        trigger: () => {
+        trigger() {
           const attack = 5;
           const hold = 50;
           const release = 100;
@@ -104,7 +107,7 @@ export default class DrumInstrument {
           const startFrq = 1000;
           const endFrq = 180;
 
-          const noise = createNoiseNode(this.noiseBuffer, ctx);
+          const noise = createNoiseNode(noiseBuffer, ctx);
           const noiseLowpassFilter = ctx.createBiquadFilter();
           const noiseGain = ctx.createGain();
           const osc = ctx.createOscillator();
@@ -119,12 +122,12 @@ export default class DrumInstrument {
           noiseLowpassFilter.connect(noiseGain);
           noiseGain.connect(env);
           osc.connect(env);
-          env.connect(this.masterGain);
+          env.connect(masterGain);
 
           osc.start();
           noise.start();
           env.gain.exponentialRampToValueAtTime(
-            0.8,
+            this.level,
             ctx.currentTime + attack * 0.001
           );
           osc.frequency.exponentialRampToValueAtTime(
@@ -153,8 +156,9 @@ export default class DrumInstrument {
       },
       {
         label: 'Kick',
+        level: 1,
         muted: false,
-        trigger: () => {
+        trigger() {
           const attack = 10;
           const hold = 50;
           const release = 200;
@@ -169,11 +173,11 @@ export default class DrumInstrument {
           env.gain.value = silence;
 
           osc.connect(env);
-          env.connect(this.masterGain);
+          env.connect(masterGain);
 
           osc.start();
           env.gain.exponentialRampToValueAtTime(
-            1,
+            this.level,
             ctx.currentTime + attack * 0.001
           );
           osc.frequency.exponentialRampToValueAtTime(
