@@ -10,7 +10,10 @@ export default class Drums extends Component {
     super(props);
     const { audioMixer } = props;
 
-    this.drumInstrument = new DrumInstrument(audioMixer);
+    this.drumInstrument = new DrumInstrument({
+      ctx: audioMixer.ctx,
+      destination: audioMixer.masterGain,
+    });
 
     this.state = {
       sequenceLength: INIT_SEQUENCE_LENGTH,

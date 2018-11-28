@@ -22,13 +22,11 @@ function createNoiseNode(buffer, ctx) {
 }
 
 export default class DrumInstrument {
-  constructor(audioMixer) {
-    const { ctx, masterGain } = audioMixer;
-
+  constructor({ ctx, destination }) {
     this.noiseBuffer = createNoiseBuffer(ctx);
 
     this.masterGain = ctx.createGain();
-    this.masterGain.connect(masterGain);
+    this.masterGain.connect(destination);
 
     this.sounds = [
       {
