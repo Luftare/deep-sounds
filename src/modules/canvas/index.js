@@ -1,19 +1,29 @@
 import React, { Component } from 'react';
 import { DrawingCanvas, CanvasPlayhead, Container } from './components';
+import LinePlayer from './LinePlayer';
 
-const LINE_MIN_X_DIFF = 20;
-const INIT_SEQUENCE_LENGTH = 8;
+const LINE_MIN_X_DIFF = 0.005;
+const INIT_SEQUENCE_LENGTH = 32;
 
 function getRelativeCoordinates(e) {
+  const { width, height } = e.target;
   const rect = e.target.getBoundingClientRect();
-  const x = e.clientX - rect.left; //x position within the element.
-  const y = e.clientY - rect.top; //y position within the element.
-  return [x, y];
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  return [x / width, y / height];
 }
 
 export default class Canvas extends Component {
   constructor(props) {
     super(props);
+
+    const { audioMixer } = props;
+
+    this.linePlayer = new LinePlayer({
+      destination: audioMixer.masterGain,
+      ctx: audioMixer.ctx,
+    });
+
     this.canvasRef = React.createRef();
 
     this.state = {
@@ -40,6 +50,23 @@ export default class Canvas extends Component {
       prevProps.step !== this.props.step && this.props.step >= 0;
 
     if (nextSequenceStepReceived) {
+      const step = this.getCurrentStep();
+      const relativeStartX = step / this.state.sequenceLength;
+      const relativeEndX = (step + 1) / this.state.sequenceLength;
+      const sequenceTotalTime = this.props.stepTime * this.state.sequenceLength;
+      const currentLines = this.state.lines.filter(line => {
+        if (line.points.length < 2) return false;
+        const [x] = line.points[0];
+        return x >= relativeStartX && x < relativeEndX;
+      });
+
+      currentLines.forEach(line => {
+        this.linePlayer.playLine(
+          line.points,
+          relativeStartX,
+          sequenceTotalTime
+        );
+      });
     }
     return null;
   }
@@ -48,6 +75,7 @@ export default class Canvas extends Component {
     const canvas = this.canvasRef.current;
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
+    const { width, height } = canvas;
     const ctx = canvas.getContext('2d');
     this.state.lines.forEach(({ points }) => {
       if (points.length < 2) return;
@@ -59,11 +87,11 @@ export default class Canvas extends Component {
         const isLastPoint = i === points.length - 1;
         if (isFirstPoint) {
           ctx.beginPath();
-          ctx.moveTo(...point);
+          ctx.moveTo(point[0] * width, point[1] * height);
           return;
         }
 
-        ctx.lineTo(...point);
+        ctx.lineTo(point[0] * width, point[1] * height);
 
         if (isLastPoint) {
           ctx.stroke();

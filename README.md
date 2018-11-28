@@ -1,5 +1,7 @@
 Maybe?
 
+- refactor: use global constants for silence
+
 - layout: instruments can be shrinked
 
 - ux: instruments can be always muted
@@ -9,6 +11,7 @@ Maybe?
 - drums: can change sound sequence length
 - drums: note sustain can be changed accross all sounds
 
+- canvas: display sequence positions
 - canvas: lines can be muted
 - canvas: latest line can be removed
 - canvas: all lines can be transposed up or down
@@ -45,8 +48,7 @@ Will do:
 
 Do next:
 
-- canvas: lines are player in sync with other instruments
-
 Done:
 
+- canvas: lines are player in sync with other instruments
 - canvas: can draw lines

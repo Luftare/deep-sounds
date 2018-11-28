@@ -3,17 +3,19 @@ import Drums from './modules/drums';
 import Canvas from './modules/canvas';
 
 class App extends Component {
-  ticker = null;
   state = {
     step: 0,
     active: false,
   };
 
-  componentDidMount() {
+  constructor(props) {
+    super(props);
     const { ticker } = this.props;
     this.ticker = ticker;
+  }
 
-    ticker.onTick = () => {
+  componentDidMount() {
+    this.ticker.onTick = () => {
       this.setState(({ step }) => ({
         step: step + 1,
       }));
@@ -46,13 +48,19 @@ class App extends Component {
   render() {
     const { step, active } = this.state;
     const { audioMixer } = this.props;
+    const stepTime = this.ticker.getIntervalTime();
     return (
       <div>
         <button onMouseDown={this.startSequence}>Start</button>
         <button onMouseDown={this.stopSequence}>Stop</button>
         <div>{this.state.sequenceActive ? 'on' : 'off'}</div>
         <Drums step={step} audioMixer={audioMixer} active={active} />
-        <Canvas step={step} audioMixer={audioMixer} active={active} />
+        <Canvas
+          step={step}
+          stepTime={stepTime}
+          audioMixer={audioMixer}
+          active={active}
+        />
       </div>
     );
   }
