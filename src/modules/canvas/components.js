@@ -14,8 +14,10 @@ export const DrawingCanvas = styled.canvas`
 export const CanvasPlayhead = styled.div`
   position: absolute;
   top: 0;
-  left: 50%;
+  left: ${({ step, sequenceLength }) => (100 * step) / sequenceLength}%;
   background-color: blue;
-  width: 2px;
+  opacity: ${({ active }) => (active ? 0.2 : 0)};
+  width: ${({ sequenceLength }) => 100 / sequenceLength}%;
   height: 100%;
+  pointer-events: none;
 `;

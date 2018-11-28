@@ -40,7 +40,6 @@ export default class Canvas extends Component {
       prevProps.step !== this.props.step && this.props.step >= 0;
 
     if (nextSequenceStepReceived) {
-      console.log('Got new step ', this.getCurrentStep());
     }
     return null;
   }
@@ -129,6 +128,8 @@ export default class Canvas extends Component {
   };
 
   render() {
+    const { sequenceLength } = this.state;
+
     return (
       <Container>
         <DrawingCanvas
@@ -138,7 +139,11 @@ export default class Canvas extends Component {
           onMouseLeave={this.endDrawing}
           onMouseMove={this.handleCanvasMouseMove}
         />
-        <CanvasPlayhead />
+        <CanvasPlayhead
+          step={this.getCurrentStep()}
+          sequenceLength={sequenceLength}
+          active={this.props.active}
+        />
       </Container>
     );
   }
