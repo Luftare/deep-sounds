@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { DrawingCanvas } from './components';
+import { DrawingCanvas, CanvasPlayhead, Container } from './components';
 
 const LINE_MIN_X_DIFF = 20;
+const INIT_SEQUENCE_LENGTH = 8;
 
 function getRelativeCoordinates(e) {
   const rect = e.target.getBoundingClientRect();
@@ -16,6 +17,7 @@ export default class Canvas extends Component {
     this.canvasRef = React.createRef();
 
     this.state = {
+      sequenceLength: INIT_SEQUENCE_LENGTH,
       cursorDown: false,
       lines: [],
     };
@@ -27,6 +29,20 @@ export default class Canvas extends Component {
 
   componentDidUpdate() {
     this.paintCanvas();
+  }
+
+  getCurrentStep() {
+    return this.props.step % this.state.sequenceLength;
+  }
+
+  getSnapshotBeforeUpdate(prevProps) {
+    const nextSequenceStepReceived =
+      prevProps.step !== this.props.step && this.props.step >= 0;
+
+    if (nextSequenceStepReceived) {
+      console.log('Got new step ', this.getCurrentStep());
+    }
+    return null;
   }
 
   paintCanvas() {
@@ -114,13 +130,16 @@ export default class Canvas extends Component {
 
   render() {
     return (
-      <DrawingCanvas
-        ref={this.canvasRef}
-        onMouseDown={this.handleCanvasMouseDown}
-        onMouseUp={this.endDrawing}
-        onMouseLeave={this.endDrawing}
-        onMouseMove={this.handleCanvasMouseMove}
-      />
+      <Container>
+        <DrawingCanvas
+          ref={this.canvasRef}
+          onMouseDown={this.handleCanvasMouseDown}
+          onMouseUp={this.endDrawing}
+          onMouseLeave={this.endDrawing}
+          onMouseMove={this.handleCanvasMouseMove}
+        />
+        <CanvasPlayhead />
+      </Container>
     );
   }
 }
