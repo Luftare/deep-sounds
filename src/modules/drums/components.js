@@ -30,4 +30,5 @@ export const SequenceLabel = styled.div`
   height: 40px;
   width: 200px;
   margin: 4px;
+  background-color: ${({ muted }) => (muted ? 'pink' : 'none')};
 `;

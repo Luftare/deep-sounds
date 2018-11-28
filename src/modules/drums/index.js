@@ -14,11 +14,22 @@ export default class Drums extends Component {
 
     this.state = {
       sequenceLength: INIT_SEQUENCE_LENGTH,
-      sequences: this.drumInstrument.soundNames.map(() =>
+      sequences: this.drumInstrument.sounds.map(() =>
         [...Array(INIT_SEQUENCE_LENGTH)].map(() => false)
       ),
+      mutes: this.drumInstrument.sounds.map(({ muted }) => muted),
     };
   }
+
+  toggleMute = soundIndex => {
+    this.drumInstrument.sounds[soundIndex].muted = !this.drumInstrument.sounds[
+      soundIndex
+    ].muted;
+
+    this.setState(() => ({
+      mutes: this.drumInstrument.sounds.map(({ muted }) => muted),
+    }));
+  };
 
   toggleStep = (sequenceIndex, stepIndex) => {
     this.setState(({ sequences }) => ({
@@ -44,10 +55,10 @@ export default class Drums extends Component {
 
   handleNewStep() {
     const step = this.getLocalStep();
-    this.drumInstrument.soundNames.forEach((soundName, sequenceIndex) => {
-      const isActive = this.state.sequences[sequenceIndex][step];
-      if (isActive) {
-        this.drumInstrument.trigger(soundName);
+    this.drumInstrument.sounds.forEach((sound, soundIndex) => {
+      const isActive = this.state.sequences[soundIndex][step];
+      if (isActive && !sound.muted) {
+        sound.trigger();
       }
     });
   }
@@ -60,7 +71,7 @@ export default class Drums extends Component {
 
   render() {
     const { active } = this.props;
-    const { sequences } = this.state;
+    const { sequences, mutes } = this.state;
 
     const currentStep = this.getLocalStep();
 
@@ -68,8 +79,11 @@ export default class Drums extends Component {
       <Container>
         {sequences.map((sequence, sequenceIndex) => (
           <Track key={keyGenerator++}>
-            <SequenceLabel>
-              {this.drumInstrument.soundNames[sequenceIndex]}
+            <SequenceLabel
+              onMouseDown={() => this.toggleMute(sequenceIndex)}
+              muted={mutes[sequenceIndex]}
+            >
+              {this.drumInstrument.sounds[sequenceIndex].label}
             </SequenceLabel>
             <Sequence>
               {sequence.map((stepActive, stepIndex) => (
