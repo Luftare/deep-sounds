@@ -43,10 +43,10 @@ Will do:
 - layout: create similar layout for all instruments
 - layout: create section for playback options
 
-- canvas: lines are player in sync with other instruments
-
 Do next:
 
-- canvas: can draw lines
+- canvas: lines are player in sync with other instruments
 
 Done:
+
+- canvas: can draw lines

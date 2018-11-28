@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Drums from './modules/drums';
+import Canvas from './modules/canvas';
 
 class App extends Component {
   ticker = null;
@@ -51,6 +52,7 @@ class App extends Component {
         <button onMouseDown={this.stopSequence}>Stop</button>
         <div>{this.state.sequenceActive ? 'on' : 'off'}</div>
         <Drums step={step} audioMixer={audioMixer} active={active} />
+        <Canvas step={step} audioMixer={audioMixer} active={active} />
       </div>
     );
   }
