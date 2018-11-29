@@ -1,11 +1,11 @@
 Maybe?
 
-- refactor: use global constants for silence
+- app: swing can be added to the ticks
+- app: start and stop with space key
+- app: tempo can be changed
 
-- layout: instruments can be shrinked
-
+- ux: instruments can be shrinked
 - ux: instruments can be always muted
-- ux: add hotkeys for keyboard
 
 - drums: can offset sound sequence left or right
 - drums: can change sound sequence length
