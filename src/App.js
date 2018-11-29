@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Drums from './modules/drums';
 import Canvas from './modules/canvas';
+import Speech from './modules/speech';
 import { InstrumentRack, MasterControls } from './components';
 
 class App extends Component {
@@ -65,6 +66,12 @@ class App extends Component {
         <InstrumentRack>
           <Drums step={step} audioMixer={audioMixer} active={active} />
           <Canvas
+            step={step}
+            stepTime={stepTime}
+            audioMixer={audioMixer}
+            active={active}
+          />
+          <Speech
             step={step}
             stepTime={stepTime}
             audioMixer={audioMixer}
