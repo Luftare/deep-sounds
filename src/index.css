@@ -7,3 +7,19 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+button {
+  padding: 4px;
+  font-size: 16px;
+  background-color: #333;
+  color: white;
+  border: none;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button:focus {
+  outline: 0;
+}

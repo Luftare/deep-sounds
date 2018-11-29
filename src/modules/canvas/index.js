@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
-import { DrawingCanvas, CanvasPlayhead, Container } from './components';
+import {
+  DrawingCanvas,
+  CanvasPlayhead,
+  Container,
+  Controls,
+  CanvasContainer,
+} from './components';
 import LinePlayer from './LinePlayer';
 
 const LINE_MIN_X_DIFF = 0.005;
-const INIT_SEQUENCE_LENGTH = 32;
+const INIT_SEQUENCE_LENGTH = 8;
 
 function getRelativeCoordinates(e) {
   const { width, height } = e.target;
@@ -29,11 +35,13 @@ export default class Canvas extends Component {
     this.state = {
       sequenceLength: INIT_SEQUENCE_LENGTH,
       cursorDown: false,
+      transpose: 0,
       lines: [],
     };
   }
 
   componentDidMount() {
+    this.canvasRef.current.addEventListener('resize', this.paintCanvas);
     this.paintCanvas();
   }
 
@@ -62,7 +70,7 @@ export default class Canvas extends Component {
 
       currentLines.forEach(line => {
         this.linePlayer.playLine(
-          line.points,
+          line.points.map(this.getTransposedPoint),
           relativeStartX,
           sequenceTotalTime
         );
@@ -71,7 +79,37 @@ export default class Canvas extends Component {
     return null;
   }
 
-  paintCanvas() {
+  handleTransposeChange = e => {
+    const transpose = parseFloat(e.target.value);
+
+    this.setState(
+      {
+        transpose,
+      },
+      this.paintCanvas
+    );
+  };
+
+  removeRecentLine = () => {
+    this.setState(({ lines }) => ({
+      lines: lines.filter((line, index) => index !== lines.length - 1),
+    }));
+  };
+
+  removeAllLines = () => {
+    this.setState(() => ({
+      lines: [],
+    }));
+  };
+
+  getTransposedPoint = ([x, y]) => {
+    return [
+      Math.max(0, Math.min(1, x)),
+      Math.max(0, Math.min(1, y + this.state.transpose)),
+    ];
+  };
+
+  paintCanvas = () => {
     const canvas = this.canvasRef.current;
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
@@ -85,20 +123,23 @@ export default class Canvas extends Component {
       points.forEach((point, i) => {
         const isFirstPoint = i === 0;
         const isLastPoint = i === points.length - 1;
+        const [relativeX, relativeY] = this.getTransposedPoint(point);
+        const x = relativeX * width;
+        const y = relativeY * height;
         if (isFirstPoint) {
           ctx.beginPath();
-          ctx.moveTo(point[0] * width, point[1] * height);
+          ctx.moveTo(x, y);
           return;
         }
 
-        ctx.lineTo(point[0] * width, point[1] * height);
+        ctx.lineTo(x, y);
 
         if (isLastPoint) {
           ctx.stroke();
         }
       });
     });
-  }
+  };
 
   handleCanvasMouseDown = e => {
     const point = getRelativeCoordinates(e);
@@ -160,18 +201,39 @@ export default class Canvas extends Component {
 
     return (
       <Container>
-        <DrawingCanvas
-          ref={this.canvasRef}
-          onMouseDown={this.handleCanvasMouseDown}
-          onMouseUp={this.endDrawing}
-          onMouseLeave={this.endDrawing}
-          onMouseMove={this.handleCanvasMouseMove}
-        />
-        <CanvasPlayhead
-          step={this.getCurrentStep()}
-          sequenceLength={sequenceLength}
-          active={this.props.active}
-        />
+        <Controls>
+          <div className="header">
+            <button onClick={this.removeAllLines} className="reset">
+              Reset
+            </button>
+            <button onClick={this.removeRecentLine} className="undo">
+              Undo
+            </button>
+          </div>
+          <input
+            type="range"
+            className="transpose"
+            defaultValue={this.state.transpose}
+            onInput={this.handleTransposeChange}
+            min="-0.5"
+            max="0.5"
+            step="0.001"
+          />
+        </Controls>
+        <CanvasContainer>
+          <DrawingCanvas
+            ref={this.canvasRef}
+            onMouseDown={this.handleCanvasMouseDown}
+            onMouseUp={this.endDrawing}
+            onMouseLeave={this.endDrawing}
+            onMouseMove={this.handleCanvasMouseMove}
+          />
+          <CanvasPlayhead
+            step={this.getCurrentStep()}
+            sequenceLength={sequenceLength}
+            active={this.props.active}
+          />
+        </CanvasContainer>
       </Container>
     );
   }
