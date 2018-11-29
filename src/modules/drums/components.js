@@ -5,7 +5,7 @@ export const Step = styled.div`
   background-color: ${({ active, isCurrent }) => {
     if (isCurrent) return '#0f8';
     if (active) return '#6a6';
-    return '#eee';
+    return '#ddd';
   }};
   cursor: pointer;
 `;

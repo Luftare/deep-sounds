@@ -7,7 +7,7 @@ export const Container = styled.div`
     flex-grow: 1;
     font-size: 20px;
     min-width: 20px;
-    background-color: #485;
+    background-color: #264;
     color: white;
     border: solid 3px #eee;
     padding: 8px;

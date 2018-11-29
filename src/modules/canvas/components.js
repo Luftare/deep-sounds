@@ -11,7 +11,7 @@ export const CanvasContainer = styled.div`
 `;
 
 export const DrawingCanvas = styled.canvas`
-  background-color: #eee;
+  background-color: #ddd;
   height: 300px;
   width: 100%;
   vertical-align: top;
