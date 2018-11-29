@@ -50,3 +50,4 @@ Done:
 - canvas: lines outside the canvas (start or end) will not be played
 - canvas: all lines can be transposed up or down
 - canvas: all lines can be offsetted to left or right
+- canvas: reset timing offset and transpose on double click of the range input
