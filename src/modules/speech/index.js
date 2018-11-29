@@ -24,7 +24,7 @@ export default class Speech extends Component {
       sequenceLength: 8,
       speechRate: DEFAULT_SPEECH_RATE,
       timingOffset: DEFAULT_TIMING,
-      pitch: DEFAULT_PITCH,
+      pitch: DEFAULT_PITCH
     };
     this.speechGenerator = new SpeechGenerator();
     this.speechGenerator.rate = DEFAULT_SPEECH_RATE;
@@ -53,7 +53,9 @@ export default class Speech extends Component {
         const delayTime = sequenceTime - this.state.timingOffset;
         if (currentLine) {
           setTimeout(() => {
-            this.speechGenerator.speak(currentLine);
+            if (this.speechGenerator.isReady()) {
+              this.speechGenerator.speak(currentLine);
+            }
           }, delayTime);
         }
       }
