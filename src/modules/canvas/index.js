@@ -155,10 +155,13 @@ export default class Canvas extends Component {
     canvas.width = width;
     canvas.height = height;
 
-    this.state.lines.forEach(({ points }) => {
+    this.state.lines.forEach(({ points, color }) => {
       if (points.length < 2) return;
 
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 10;
+      ctx.globalAlpha = 0.7;
+      ctx.strokeStyle = color;
+      ctx.lineCap = 'round';
 
       points.forEach((point, i) => {
         const isFirstPoint = i === 0;
@@ -195,6 +198,9 @@ export default class Canvas extends Component {
         ...lines,
         {
           points: [transposedPoint],
+          color: `rgb(${Math.floor(Math.random() * 255)},${Math.floor(
+            Math.random() * 255
+          )},${Math.floor(Math.random() * 255)})`,
         },
       ],
     }));

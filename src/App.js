@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Drums from './modules/drums';
 import Canvas from './modules/canvas';
+import { InstrumentRack } from './components';
 
 class App extends Component {
   state = {
@@ -53,14 +54,15 @@ class App extends Component {
       <div>
         <button onMouseDown={this.startSequence}>Start</button>
         <button onMouseDown={this.stopSequence}>Stop</button>
-        <div>{this.state.sequenceActive ? 'on' : 'off'}</div>
-        <Drums step={step} audioMixer={audioMixer} active={active} />
-        <Canvas
-          step={step}
-          stepTime={stepTime}
-          audioMixer={audioMixer}
-          active={active}
-        />
+        <InstrumentRack>
+          <Drums step={step} audioMixer={audioMixer} active={active} />
+          <Canvas
+            step={step}
+            stepTime={stepTime}
+            audioMixer={audioMixer}
+            active={active}
+          />
+        </InstrumentRack>
       </div>
     );
   }

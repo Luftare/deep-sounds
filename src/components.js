@@ -1,8 +1,15 @@
 import styled from 'styled-components';
 
+export const InstrumentRack = styled.div`
+  > *:not(:last-child) {
+    border-bottom: solid 3px #ccc;
+  }
+`;
+
 export const ModuleContainer = styled.div`
   position: relative;
-  padding: 20px;
-  margin: 20px;
-  box-shadow: 0 2px 5px grey;
+  padding: 40px 0;
+  margin: 0 40px;
+
+  box-sizing: border-box;
 `;

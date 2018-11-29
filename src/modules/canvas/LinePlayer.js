@@ -1,5 +1,5 @@
 const MIN_FREQUENCY = 40;
-const OCTAVES = 5;
+const OCTAVES = 6;
 const SILENCE = 0.0001;
 const DISCONNECT_OFFSET_TIME = 1000;
 
