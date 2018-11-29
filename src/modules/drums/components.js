@@ -14,13 +14,13 @@ export const Sequence = styled.div`
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(1, 40px);
-  grid-gap: 4px;
+  grid-gap: 8px;
   flex-grow: 1;
 `;
 
 export const Track = styled.div`
   display: flex;
-  margin: 2px 0;
+  margin: 8px 0;
 `;
 
 export const SequenceLabel = styled.div`
@@ -28,6 +28,7 @@ export const SequenceLabel = styled.div`
   justify-content: center;
   align-items: center;
   height: 40px;
-  width: 200px;
+  width: 180px;
+  margin-right: 20px;
   background-color: ${({ muted }) => (muted ? 'pink' : 'none')};
 `;
