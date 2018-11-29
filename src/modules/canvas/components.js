@@ -32,7 +32,7 @@ export const Controls = styled.div`
   display: flex;
   flex-grow: 0;
   flex-shrink: 0;
-  width: 200px;
+  width: 180px;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
@@ -40,11 +40,11 @@ export const Controls = styled.div`
   .header {
     width: 100%;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
   }
 
   .reset {
-    background-color: red;
+    background-color: #a77;
   }
 
   .transpose {

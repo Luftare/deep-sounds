@@ -146,17 +146,14 @@ export default class Canvas extends Component {
   };
 
   paintCanvas = () => {
-    const dpr = window.devicePixelRatio || 1;
     const canvas = this.canvasRef.current;
     const ctx = canvas.getContext('2d');
-
     const rect = canvas.getBoundingClientRect();
-    const width = rect.width * dpr;
-    const height = rect.height * dpr;
+    const width = rect.width;
+    const height = rect.height;
 
     canvas.width = width;
     canvas.height = height;
-    ctx.scale(dpr, dpr);
 
     this.state.lines.forEach(({ points }) => {
       if (points.length < 2) return;
@@ -169,6 +166,7 @@ export default class Canvas extends Component {
         const [relativeX, relativeY] = this.getTransposedPoint(point);
         const x = relativeX * width;
         const y = relativeY * height;
+
         if (isFirstPoint) {
           ctx.beginPath();
           ctx.moveTo(x, y);
