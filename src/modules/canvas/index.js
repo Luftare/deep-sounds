@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import {
+  Container,
   DrawingCanvas,
   CanvasPlayhead,
-  Container,
   Controls,
   CanvasContainer,
 } from './components';
+import { ModuleContainer } from '../../components';
+
 import LinePlayer from './LinePlayer';
 
 const LINE_MIN_X_DIFF = 0.005;
@@ -144,11 +146,18 @@ export default class Canvas extends Component {
   };
 
   paintCanvas = () => {
+    const dpr = window.devicePixelRatio || 1;
     const canvas = this.canvasRef.current;
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    const { width, height } = canvas;
     const ctx = canvas.getContext('2d');
+
+    const rect = canvas.getBoundingClientRect();
+    const width = rect.width * dpr;
+    const height = rect.height * dpr;
+
+    canvas.width = width;
+    canvas.height = height;
+    ctx.scale(dpr, dpr);
+
     this.state.lines.forEach(({ points }) => {
       if (points.length < 2) return;
 
@@ -246,60 +255,62 @@ export default class Canvas extends Component {
     const noLines = lines.length === 0;
 
     return (
-      <Container>
-        <Controls>
-          <div className="header">
-            <button
-              onClick={this.removeAllLines}
-              className="reset"
-              disabled={noLines}
-            >
-              Reset
-            </button>
-            <button
-              onClick={this.removeRecentLine}
-              className="undo"
-              disabled={noLines}
-            >
-              Undo
-            </button>
-          </div>
-          <input
-            type="range"
-            className="transpose"
-            defaultValue={this.state.transpose}
-            onInput={this.handleTransposeChange}
-            onDoubleClick={this.resetTranspose}
-            min="-0.5"
-            max="0.5"
-            step="0.001"
-          />
-          <input
-            type="range"
-            className="timing-offset"
-            defaultValue={this.state.timingOffset}
-            onInput={this.handleTimingOffsetChange}
-            onDoubleClick={this.resetTimingOffset}
-            min="-0.5"
-            max="0.5"
-            step="0.001"
-          />
-        </Controls>
-        <CanvasContainer>
-          <DrawingCanvas
-            ref={this.canvasRef}
-            onMouseDown={this.handleCanvasMouseDown}
-            onMouseUp={this.endDrawing}
-            onMouseLeave={this.endDrawing}
-            onMouseMove={this.handleCanvasMouseMove}
-          />
-          <CanvasPlayhead
-            step={this.getCurrentStep()}
-            sequenceLength={sequenceLength}
-            active={this.props.active}
-          />
-        </CanvasContainer>
-      </Container>
+      <ModuleContainer>
+        <Container>
+          <Controls>
+            <div className="header">
+              <button
+                onClick={this.removeAllLines}
+                className="reset"
+                disabled={noLines}
+              >
+                Reset
+              </button>
+              <button
+                onClick={this.removeRecentLine}
+                className="undo"
+                disabled={noLines}
+              >
+                Undo
+              </button>
+            </div>
+            <input
+              type="range"
+              className="transpose"
+              defaultValue={this.state.transpose}
+              onInput={this.handleTransposeChange}
+              onDoubleClick={this.resetTranspose}
+              min="-0.5"
+              max="0.5"
+              step="0.001"
+            />
+            <input
+              type="range"
+              className="timing-offset"
+              defaultValue={this.state.timingOffset}
+              onInput={this.handleTimingOffsetChange}
+              onDoubleClick={this.resetTimingOffset}
+              min="-0.5"
+              max="0.5"
+              step="0.001"
+            />
+          </Controls>
+          <CanvasContainer>
+            <DrawingCanvas
+              ref={this.canvasRef}
+              onMouseDown={this.handleCanvasMouseDown}
+              onMouseUp={this.endDrawing}
+              onMouseLeave={this.endDrawing}
+              onMouseMove={this.handleCanvasMouseMove}
+            />
+            <CanvasPlayhead
+              step={this.getCurrentStep()}
+              sequenceLength={sequenceLength}
+              active={this.props.active}
+            />
+          </CanvasContainer>
+        </Container>
+      </ModuleContainer>
     );
   }
 }

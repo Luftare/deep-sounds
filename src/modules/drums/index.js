@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Step, Sequence, Container, SequenceLabel, Track } from './components';
+import { Step, Sequence, SequenceLabel, Track } from './components';
+import { ModuleContainer } from '../../components';
 import DrumInstrument from './DrumsInstrument';
 
 const INIT_SEQUENCE_LENGTH = 8;
@@ -79,7 +80,7 @@ export default class Drums extends Component {
     const currentStep = this.getLocalStep();
 
     return (
-      <Container>
+      <ModuleContainer>
         {sequences.map((sequence, sequenceIndex) => (
           <Track key={keyGenerator++}>
             <SequenceLabel
@@ -100,7 +101,7 @@ export default class Drums extends Component {
             </Sequence>
           </Track>
         ))}
-      </Container>
+      </ModuleContainer>
     );
   }
 }
