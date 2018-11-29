@@ -34,8 +34,11 @@ export const Controls = styled.div`
   flex-shrink: 0;
   width: 200px;
   flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 
   .header {
+    width: 100%;
     display: flex;
     justify-content: space-around;
   }
@@ -45,6 +48,11 @@ export const Controls = styled.div`
   }
 
   .transpose {
-    transform: rotate(90deg) translateX(50%) translateX(15px);
+    width: 140px;
+    transform: rotate(90deg);
+  }
+
+  .timing-offset {
+    width: 140px;
   }
 `;

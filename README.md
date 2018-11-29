@@ -11,11 +11,8 @@ Maybe?
 - drums: can change sound sequence length
 - drums: note sustain can be changed accross all sounds
 
-- canvas: lines can be muted
-- canvas: all lines can be offsetted to left or right
+- canvas: lines have unique color
 - canvas: line waveform can be selected
-- canvas: lines are shown on the left side
-- canvas: sequence length can be adjusted
 
 * talker: words can be placed on a timeline
 * talker: word pitch is determined by vertical positioning
@@ -52,3 +49,4 @@ Done:
 - canvas: latest line can be removed
 - canvas: lines outside the canvas (start or end) will not be played
 - canvas: all lines can be transposed up or down
+- canvas: all lines can be offsetted to left or right

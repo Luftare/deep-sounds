@@ -36,6 +36,7 @@ export default class Canvas extends Component {
       sequenceLength: INIT_SEQUENCE_LENGTH,
       cursorDown: false,
       transpose: 0,
+      timingOffset: 0,
       lines: [],
     };
   }
@@ -64,7 +65,7 @@ export default class Canvas extends Component {
       const sequenceTotalTime = this.props.stepTime * this.state.sequenceLength;
       const currentLines = this.state.lines.filter(line => {
         if (line.points.length < 2) return false;
-        const [x] = line.points[0];
+        const [x] = this.getTransposedPoint(line.points[0]);
         return x >= relativeStartX && x < relativeEndX;
       });
 
@@ -90,6 +91,17 @@ export default class Canvas extends Component {
     );
   };
 
+  handleTimingOffsetChange = e => {
+    const timingOffset = parseFloat(e.target.value);
+
+    this.setState(
+      {
+        timingOffset,
+      },
+      this.paintCanvas
+    );
+  };
+
   removeRecentLine = () => {
     this.setState(({ lines }) => ({
       lines: lines.filter((line, index) => index !== lines.length - 1),
@@ -104,7 +116,7 @@ export default class Canvas extends Component {
 
   getTransposedPoint = ([x, y]) => {
     return [
-      Math.max(0, Math.min(1, x)),
+      Math.max(0, Math.min(1, x + this.state.timingOffset)),
       Math.max(0, Math.min(1, y + this.state.transpose)),
     ];
   };
@@ -143,13 +155,17 @@ export default class Canvas extends Component {
 
   handleCanvasMouseDown = e => {
     const point = getRelativeCoordinates(e);
+    const transposedPoint = [
+      point[0] - this.state.timingOffset,
+      point[1] - this.state.transpose,
+    ];
 
     this.setState(({ lines }) => ({
       cursorDown: true,
       lines: [
         ...lines,
         {
-          points: [point],
+          points: [transposedPoint],
         },
       ],
     }));
@@ -175,9 +191,16 @@ export default class Canvas extends Component {
 
     if (!previousPoint) return;
     const newPoint = getRelativeCoordinates(e);
-    const pointTooClose = newPoint[0] - previousPoint[0] < LINE_MIN_X_DIFF;
+    const pointTooClose =
+      newPoint[0] - this.state.timingOffset - previousPoint[0] <
+      LINE_MIN_X_DIFF;
 
     if (pointTooClose) return;
+
+    const transposedNewPoint = [
+      newPoint[0] - this.state.timingOffset,
+      newPoint[1] - this.state.transpose,
+    ];
 
     this.setState(
       ({ lines }) => ({
@@ -186,7 +209,7 @@ export default class Canvas extends Component {
           if (!isLastLine) return line;
           return {
             ...line,
-            points: [...line.points, newPoint],
+            points: [...line.points, transposedNewPoint],
           };
         }),
       }),
@@ -197,16 +220,25 @@ export default class Canvas extends Component {
   };
 
   render() {
-    const { sequenceLength } = this.state;
+    const { sequenceLength, lines } = this.state;
+    const noLines = lines.length === 0;
 
     return (
       <Container>
         <Controls>
           <div className="header">
-            <button onClick={this.removeAllLines} className="reset">
+            <button
+              onClick={this.removeAllLines}
+              className="reset"
+              disabled={noLines}
+            >
               Reset
             </button>
-            <button onClick={this.removeRecentLine} className="undo">
+            <button
+              onClick={this.removeRecentLine}
+              className="undo"
+              disabled={noLines}
+            >
               Undo
             </button>
           </div>
@@ -215,6 +247,15 @@ export default class Canvas extends Component {
             className="transpose"
             defaultValue={this.state.transpose}
             onInput={this.handleTransposeChange}
+            min="-0.5"
+            max="0.5"
+            step="0.001"
+          />
+          <input
+            type="range"
+            className="timing-offset"
+            defaultValue={this.state.timingOffset}
+            onInput={this.handleTimingOffsetChange}
             min="-0.5"
             max="0.5"
             step="0.001"

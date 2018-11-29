@@ -25,6 +25,7 @@ export default class LinePlayer {
 
     const firstPoint = points[0];
     const lastPoint = points[points.length - 1];
+    if (firstPoint[0] >= lastPoint[0]) return;
     const relativeDuration = lastPoint[0] - firstPoint[0];
     const lineDuration = sequenceTime * relativeDuration;
     const lineStartX = firstPoint[0];
@@ -52,11 +53,13 @@ export default class LinePlayer {
       } else {
         const previousPoint = points[index - 1];
         const timeSincePrevious = (x - previousPoint[0]) * sequenceTime;
-        osc.frequency.setTargetAtTime(
-          frequency,
-          startTime + timeSinceStart * 0.001,
-          timeSincePrevious * 0.001
-        );
+        if (timeSincePrevious !== 0) {
+          osc.frequency.setTargetAtTime(
+            frequency,
+            startTime + timeSinceStart * 0.001,
+            timeSincePrevious * 0.001
+          );
+        }
       }
     });
     osc.start(startTime);
