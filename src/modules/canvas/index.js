@@ -91,12 +91,34 @@ export default class Canvas extends Component {
     );
   };
 
+  resetTranspose = e => {
+    e.target.value = 0;
+
+    this.setState(
+      {
+        transpose: 0,
+      },
+      this.paintCanvas
+    );
+  };
+
   handleTimingOffsetChange = e => {
     const timingOffset = parseFloat(e.target.value);
 
     this.setState(
       {
         timingOffset,
+      },
+      this.paintCanvas
+    );
+  };
+
+  resetTimingOffset = e => {
+    e.target.value = 0;
+
+    this.setState(
+      {
+        timingOffset: 0,
       },
       this.paintCanvas
     );
@@ -247,6 +269,7 @@ export default class Canvas extends Component {
             className="transpose"
             defaultValue={this.state.transpose}
             onInput={this.handleTransposeChange}
+            onDoubleClick={this.resetTranspose}
             min="-0.5"
             max="0.5"
             step="0.001"
@@ -256,6 +279,7 @@ export default class Canvas extends Component {
             className="timing-offset"
             defaultValue={this.state.timingOffset}
             onInput={this.handleTimingOffsetChange}
+            onDoubleClick={this.resetTimingOffset}
             min="-0.5"
             max="0.5"
             step="0.001"
