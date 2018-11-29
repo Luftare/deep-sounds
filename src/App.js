@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import Drums from './modules/drums';
 import Canvas from './modules/canvas';
-import { InstrumentRack } from './components';
+import { InstrumentRack, MasterControls } from './components';
 
 class App extends Component {
-  state = {
-    step: 0,
-    active: false,
-  };
-
   constructor(props) {
     super(props);
     const { ticker } = this.props;
     this.ticker = ticker;
+
+    this.state = {
+      step: 0,
+      active: false,
+      BPM: this.ticker.getBPM(),
+    };
   }
 
   componentDidMount() {
@@ -22,6 +23,14 @@ class App extends Component {
       }));
     };
   }
+
+  handleTempoChange = e => {
+    const BPM = parseInt(e.target.value);
+    this.ticker.setBPM(BPM);
+    this.setState({
+      BPM,
+    });
+  };
 
   startSequence = () => {
     this.setState(
@@ -47,13 +56,12 @@ class App extends Component {
   };
 
   render() {
-    const { step, active } = this.state;
+    const { step, active, BPM } = this.state;
     const { audioMixer } = this.props;
     const stepTime = this.ticker.getIntervalTime();
+
     return (
-      <div>
-        <button onMouseDown={this.startSequence}>Start</button>
-        <button onMouseDown={this.stopSequence}>Stop</button>
+      <>
         <InstrumentRack>
           <Drums step={step} audioMixer={audioMixer} active={active} />
           <Canvas
@@ -63,7 +71,21 @@ class App extends Component {
             active={active}
           />
         </InstrumentRack>
-      </div>
+        <MasterControls>
+          <button onMouseDown={this.startSequence}>Start</button>
+          <button onMouseDown={this.stopSequence}>Stop</button>
+          <input
+            type="range"
+            className="tempo"
+            min="40"
+            max="240"
+            step="1"
+            defaultValue={BPM}
+            onChange={this.handleTempoChange}
+          />
+          <span className="BPM">{BPM}</span>
+        </MasterControls>
+      </>
     );
   }
 }
