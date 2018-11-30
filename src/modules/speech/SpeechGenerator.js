@@ -4,6 +4,7 @@ export default class SpeechGenerator {
     this.rate = 1;
     this.pitch = 1;
     this.volume = 0.2;
+    this.speechCache = {};
   }
 
   getVoices() {
@@ -17,11 +18,17 @@ export default class SpeechGenerator {
   }
 
   speak(text, voice) {
+    const voiceKey = `${text}_${voice.name}`;
+    if (this.speechCache[voiceKey]) {
+      this.synth.speak(this.speechCache[voiceKey]);
+      return;
+    }
     const speech = new SpeechSynthesisUtterance(text);
-    if (voice) speech.voice = voice;
+    speech.voice = voice;
     speech.rate = this.rate;
     speech.pitch = this.pitch;
     speech.volume = this.volume;
+    this.speechCache[voiceKey] = speech;
     this.synth.speak(speech);
   }
 }
