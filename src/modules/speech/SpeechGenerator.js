@@ -17,10 +17,12 @@ export default class SpeechGenerator {
 
   speak(text, voice) {
     const voiceKey = `${text}_${voice.name}_${this.rate}_${this.pitch}`;
+
     if (this.speechCache[voiceKey]) {
       this.synth.speak(this.speechCache[voiceKey]);
       return;
     }
+
     const speech = new SpeechSynthesisUtterance(text);
     speech.voice = voice;
     speech.rate = this.rate;

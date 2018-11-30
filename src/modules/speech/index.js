@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 
-import { SpeechControls, Container, SlideControl } from './components';
+import {
+  SpeechControls,
+  Container,
+  SlideControl,
+  Prompter,
+} from './components';
 import SpeechGenerator from './SpeechGenerator';
 import { ModuleContainer } from '../../components';
 
@@ -26,6 +31,7 @@ export default class Speech extends Component {
       voices: [],
       selectedVoiceIndex: 0,
       lines: [],
+      currentLine: '',
       sequenceLength: 8,
       speechRate: DEFAULT_SPEECH_RATE,
       timingOffset: DEFAULT_TIMING,
@@ -36,7 +42,7 @@ export default class Speech extends Component {
 
     this.speechGenerator.synth.onvoiceschanged = () => {
       if (this.state.voices.length > 0) return;
-      console.log(this.speechGenerator.getVoices());
+
       this.setState({
         voices: this.speechGenerator.getVoices(),
       });
@@ -67,13 +73,24 @@ export default class Speech extends Component {
         const currentLine = this.state.lines[currentLineIndex];
         const sequenceTime = this.props.stepTime * this.state.sequenceLength;
         const delayTime = sequenceTime - this.state.timingOffset;
-        if (currentLine) {
-          setTimeout(() => {
+
+        setTimeout(() => {
+          if (currentLine) {
             this.speechGenerator.interrupt();
             const voice = this.state.voices[this.state.selectedVoiceIndex];
             this.speechGenerator.speak(currentLine, voice);
-          }, delayTime);
-        }
+          }
+          this.setState(
+            {
+              currentLine: '',
+            },
+            () => {
+              this.setState({
+                currentLine,
+              });
+            }
+          );
+        }, delayTime);
       }
     }
     return null;
@@ -127,6 +144,8 @@ export default class Speech extends Component {
   };
 
   render() {
+    const { currentLine } = this.state;
+
     return (
       <ModuleContainer>
         <Container>
@@ -180,6 +199,7 @@ export default class Speech extends Component {
             </SlideControl>
           </SpeechControls>
           <textarea ref={this.textareaRef} onChange={this.handleTextChange} />
+          {currentLine && <Prompter>{currentLine}</Prompter>}
         </Container>
       </ModuleContainer>
     );
