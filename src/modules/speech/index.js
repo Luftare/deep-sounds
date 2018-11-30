@@ -10,6 +10,7 @@ import SpeechGenerator from './SpeechGenerator';
 import { ModuleContainer } from '../../components';
 
 let keyCounter = 1;
+let nextSpeechTimeoutId = null;
 
 const TIMING_MAX_VALUE = 100;
 const TIMING_MIN_VALUE = -100;
@@ -61,6 +62,10 @@ export default class Speech extends Component {
 
     if (!this.props.active && prevProps.active) {
       this.speechGenerator.interrupt();
+      clearTimeout(nextSpeechTimeoutId);
+      this.setState({
+        currentLine: '',
+      });
     }
 
     if (nextSequenceStepReceived && this.state.lines.length > 0) {
@@ -74,7 +79,7 @@ export default class Speech extends Component {
         const sequenceTime = this.props.stepTime * this.state.sequenceLength;
         const delayTime = sequenceTime - this.state.timingOffset;
 
-        setTimeout(() => {
+        nextSpeechTimeoutId = setTimeout(() => {
           if (currentLine) {
             this.speechGenerator.interrupt();
             const voice = this.state.voices[this.state.selectedVoiceIndex];

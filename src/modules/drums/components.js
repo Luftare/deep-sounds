@@ -30,5 +30,12 @@ export const SequenceLabel = styled.div`
   height: 40px;
   width: 180px;
   margin-right: 20px;
-  background-color: ${({ muted }) => (muted ? 'pink' : 'none')};
+  background-color: ${({ muted }) => (muted ? '#a77' : 'none')};
+  color: ${({ muted }) => (muted ? 'white' : 'black')};
+  cursor: pointer;
+
+  :hover {
+    background-color: ${({ muted }) => (muted ? '#a77' : '#ddd')};
+    color: ${({ muted }) => (muted ? 'white' : 'black')};
+  }
 `;

@@ -23,7 +23,7 @@ export const SpeechControls = styled.div`
 `;
 
 const bounceAnimation = keyframes`
-  0% {
+  30% {
     transform: scale(2);
   }
   100% {
@@ -37,7 +37,7 @@ export const Prompter = styled.div`
   align-items: center;
   font-size: 40px;
   padding: 20px;
-  animation: ${bounceAnimation} 200ms;
+  animation: ${bounceAnimation} 400ms;
 `;
 
 export const SlideControl = styled.div`
