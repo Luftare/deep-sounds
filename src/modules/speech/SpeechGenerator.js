@@ -12,13 +12,11 @@ export default class SpeechGenerator {
   }
 
   interrupt() {
-    if (this.synth.speaking) {
-      this.synth.cancel();
-    }
+    this.synth.cancel();
   }
 
   speak(text, voice) {
-    const voiceKey = `${text}_${voice.name}`;
+    const voiceKey = `${text}_${voice.name}_${this.rate}_${this.pitch}`;
     if (this.speechCache[voiceKey]) {
       this.synth.speak(this.speechCache[voiceKey]);
       return;

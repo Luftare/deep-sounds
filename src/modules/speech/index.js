@@ -36,6 +36,7 @@ export default class Speech extends Component {
 
     this.speechGenerator.synth.onvoiceschanged = () => {
       if (this.state.voices.length > 0) return;
+      console.log(this.speechGenerator.getVoices());
       this.setState({
         voices: this.speechGenerator.getVoices(),
       });
@@ -51,6 +52,10 @@ export default class Speech extends Component {
   getSnapshotBeforeUpdate(prevProps) {
     const nextSequenceStepReceived =
       prevProps.step !== this.props.step && this.props.step >= 0;
+
+    if (!this.props.active && prevProps.active) {
+      this.speechGenerator.interrupt();
+    }
 
     if (nextSequenceStepReceived && this.state.lines.length > 0) {
       const step = this.getCurrentStep();
@@ -127,12 +132,13 @@ export default class Speech extends Component {
         <Container>
           <SpeechControls>
             <select
+              disabled={this.props.active}
               onChange={this.handleVoiceSelection}
               value={this.state.selectedVoiceIndex}
             >
               {this.state.voices.map((voice, index) => (
                 <option key={keyCounter++} value={index}>
-                  {voice.name}
+                  {voice.name} ({voice.lang})
                 </option>
               ))}
             </select>
