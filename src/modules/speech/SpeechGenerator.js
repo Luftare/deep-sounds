@@ -6,16 +6,22 @@ export default class SpeechGenerator {
     this.volume = 0.2;
   }
 
-  isReady() {
-    return !this.synth.speaking;
+  getVoices() {
+    return this.synth.getVoices();
   }
 
-  speak(text) {
+  interrupt() {
+    if (this.synth.speaking) {
+      this.synth.cancel();
+    }
+  }
+
+  speak(text, voice) {
     const speech = new SpeechSynthesisUtterance(text);
+    if (voice) speech.voice = voice;
     speech.rate = this.rate;
     speech.pitch = this.pitch;
     speech.volume = this.volume;
-
     this.synth.speak(speech);
   }
 }

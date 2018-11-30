@@ -4,8 +4,10 @@ import { SpeechControls, Container, SlideControl } from './components';
 import SpeechGenerator from './SpeechGenerator';
 import { ModuleContainer } from '../../components';
 
-const TIMING_MAX_VALUE = 200;
-const TIMING_MIN_VALUE = -200;
+let keyCounter = 1;
+
+const TIMING_MAX_VALUE = 100;
+const TIMING_MIN_VALUE = -100;
 const DEFAULT_TIMING = 0;
 
 const PITCH_MIN_VALUE = 0.1;
@@ -19,16 +21,25 @@ const DEFAULT_SPEECH_RATE = 1;
 export default class Speech extends Component {
   constructor(props) {
     super(props);
+    this.speechGenerator = new SpeechGenerator();
     this.state = {
+      voices: [],
+      selectedVoiceIndex: 0,
       lines: [],
       sequenceLength: 8,
       speechRate: DEFAULT_SPEECH_RATE,
       timingOffset: DEFAULT_TIMING,
-      pitch: DEFAULT_PITCH
+      pitch: DEFAULT_PITCH,
     };
-    this.speechGenerator = new SpeechGenerator();
     this.speechGenerator.rate = DEFAULT_SPEECH_RATE;
     this.textareaRef = React.createRef();
+
+    this.speechGenerator.synth.onvoiceschanged = () => {
+      if (this.state.voices.length > 0) return;
+      this.setState({
+        voices: this.speechGenerator.getVoices(),
+      });
+    };
   }
 
   getCurrentStep() {
@@ -53,15 +64,22 @@ export default class Speech extends Component {
         const delayTime = sequenceTime - this.state.timingOffset;
         if (currentLine) {
           setTimeout(() => {
-            if (this.speechGenerator.isReady()) {
-              this.speechGenerator.speak(currentLine);
-            }
+            this.speechGenerator.interrupt();
+            const voice = this.state.voices[this.state.selectedVoiceIndex];
+            this.speechGenerator.speak(currentLine, voice);
           }, delayTime);
         }
       }
     }
     return null;
   }
+
+  handleVoiceSelection = e => {
+    const selectedVoiceIndex = parseInt(e.target.value);
+    this.setState({
+      selectedVoiceIndex,
+    });
+  };
 
   handleTextChange = e => {
     const text = e.target.value;
@@ -108,6 +126,16 @@ export default class Speech extends Component {
       <ModuleContainer>
         <Container>
           <SpeechControls>
+            <select
+              onChange={this.handleVoiceSelection}
+              value={this.state.selectedVoiceIndex}
+            >
+              {this.state.voices.map((voice, index) => (
+                <option key={keyCounter++} value={index}>
+                  {voice.name}
+                </option>
+              ))}
+            </select>
             <SlideControl>
               <label>Timing</label>
               <input

@@ -1,12 +1,13 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  grid-template-rows: 250px;
+  grid-gap: 20px;
 
   textarea {
-    flex-grow: 1;
     font-size: 20px;
-    min-width: 20px;
     background-color: #264;
     color: white;
     border: solid 3px #eee;
@@ -17,12 +18,7 @@ export const Container = styled.div`
 
 export const SpeechControls = styled.div`
   display: flex;
-  flex-grow: 0;
-  flex-shrink: 0;
   flex-direction: column;
-  width: 180px;
-  height: 250px;
-  margin-right: 20px;
   justify-content: space-between;
 `;
 
