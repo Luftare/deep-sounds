@@ -3,7 +3,7 @@ export default class SpeechGenerator {
     this.synth = window.speechSynthesis;
     this.rate = 1;
     this.pitch = 1;
-    this.volume = 0.2;
+    this.volume = 0.6;
     this.speechCache = {};
   }
 

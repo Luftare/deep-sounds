@@ -5,6 +5,7 @@ export const Container = styled.div`
   grid-template-columns: 180px 1fr 1fr;
   grid-template-rows: 250px;
   grid-gap: 20px;
+  overflow: hidden;
 
   textarea {
     font-size: 20px;
