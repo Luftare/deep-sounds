@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
+import { InstrumentRack, MasterControls } from './components';
+
 import Drums from './modules/drums';
 import Canvas from './modules/canvas';
 import Speech from './modules/speech';
-import { InstrumentRack, MasterControls } from './components';
 
 class App extends Component {
   constructor(props) {
     super(props);
-    const { ticker } = this.props;
-    this.ticker = ticker;
+
+    this.ticker = this.props.ticker;
 
     this.state = {
       step: 0,
