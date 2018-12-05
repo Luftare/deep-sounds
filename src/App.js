@@ -9,7 +9,7 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.ticker = this.props.ticker;
+    this.ticker = props.ticker;
 
     this.state = {
       step: 0,
