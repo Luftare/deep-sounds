@@ -13,6 +13,21 @@ export default class Midi extends Component {
       ctx: audioMixer.ctx,
       destination: audioMixer.masterGain,
     });
+
+    // TODO: remove this once functionality verified with actual midi keyboard
+    window.addEventListener('keydown', ({ key }) => {
+      if (key === 'a') {
+        this.midiSynth.handleMidiEvent({
+          data: [144, 50, 127],
+        });
+      }
+
+      if (key === 's') {
+        this.midiSynth.handleMidiEvent({
+          data: [128, 50, 127],
+        });
+      }
+    });
   }
 
   render() {
