@@ -4,6 +4,7 @@ import { InstrumentRack, MasterControls } from './components';
 import Drums from './modules/drums';
 import Canvas from './modules/canvas';
 import Speech from './modules/speech';
+import Midi from './modules/midi';
 
 class App extends Component {
   constructor(props) {
@@ -78,6 +79,7 @@ class App extends Component {
             audioMixer={audioMixer}
             active={active}
           />
+          <Midi audioMixer={audioMixer} />
         </InstrumentRack>
         <MasterControls>
           <button onMouseDown={this.startSequence}>Start</button>
