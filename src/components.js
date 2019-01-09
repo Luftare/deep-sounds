@@ -10,26 +10,12 @@ export const MasterControls = styled.div`
   align-items: center;
   padding: 20px;
 
-  .tempo {
+  .range-label {
+    font-size: 28px;
+  }
+
+  input[type="range"] {
     width: 120px;
-  }
-
-  .BPM {
-    width: 40px;
-    text-align: center;
-    font-size: 20px;
-  }
-
-  .overdrive-gain {
-    &__input {
-      width: 120px;
-    }
-    
-    &__label {
-      width: 40px;
-      text-align: center;
-      font-size: 20px;
-    }
   }
 
   > * {

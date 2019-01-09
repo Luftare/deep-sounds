@@ -1,7 +1,8 @@
 function hardClipCurve(value, gain) {
-  const maxValue = 1.0001 - gain;
+  const weightedGain = gain ** 0.2;
+  const maxValue = 1.0001 - weightedGain;
   const sign = value >= 0 ? 1 : -1;
-  const multiplier = 1 / (1.0001 - gain);
+  const multiplier = 1 / (1.0001 - weightedGain);
   return multiplier * Math.min(maxValue, Math.abs(value)) * sign;
 }
 

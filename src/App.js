@@ -92,8 +92,8 @@ class App extends Component {
           <Midi audioMixer={audioMixer} />
         </InstrumentRack>
         <MasterControls>
-          <button onMouseDown={this.startSequence}>Start</button>
-          <button onMouseDown={this.stopSequence}>Stop</button>
+          <button onMouseDown={active ? this.stopSequence : this.startSequence}>{active ? 'Stop' : 'Start'}</button>
+          <span className="range-label" role="img" aria-label="Clock">⏰</span>
           <input
             type="range"
             className="tempo"
@@ -103,7 +103,7 @@ class App extends Component {
             defaultValue={BPM}
             onChange={this.handleTempoChange}
           />
-          <span className="BPM">{BPM}</span>
+          <span className="range-label" role="img" aria-label="Clock">🔥</span>
           <input
             type="range"
             className="overdrive-gain__input"
@@ -113,7 +113,6 @@ class App extends Component {
             defaultValue={overdriveGain}
             onChange={this.handleOverdriveGainChange}
           />
-          <span className="overdrive-gain__label">{overdriveGain}</span>
         </MasterControls>
       </>
     );
