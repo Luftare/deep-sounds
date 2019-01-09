@@ -1,5 +1,5 @@
 const SILENCE = 0.00001;
-const DISCONNECT_TIME_OFFSET = 1000;
+const DISCONNECT_TIME_OFFSET = 100;
 
 function createNoiseBuffer(ctx) {
   const bufferSize = 4096 * 16;

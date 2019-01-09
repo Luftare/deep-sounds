@@ -1,7 +1,7 @@
 function hardClipCurve(value, gain) {
-  const maxValue = 1.001 - gain;
+  const maxValue = 1.0001 - gain;
   const sign = value >= 0 ? 1 : -1;
-  const multiplier = 1 / (1.001 - gain);
+  const multiplier = 1 / (1.0001 - gain);
   return multiplier * Math.min(maxValue, Math.abs(value)) * sign;
 }
 
@@ -19,7 +19,8 @@ export default class Overdrive {
         const outputData = outputBuffer.getChannelData(channel);
     
         for (let sample = 0; sample < inputBuffer.length; sample++) {
-          outputData[sample] = hardClipCurve(inputData[sample], this.gain);
+          const outputValue = this.gain === 0 ? inputData[sample] : hardClipCurve(inputData[sample], this.gain);
+          outputData[sample] = outputValue;
         }
       }
     }

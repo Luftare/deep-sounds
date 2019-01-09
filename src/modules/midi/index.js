@@ -11,7 +11,7 @@ export default class Midi extends Component {
 
     this.midiSynth = new MidiSynth({
       ctx: audioMixer.ctx,
-      destination: audioMixer.masterGain,
+      destination: audioMixer.input,
     });
 
     // TODO: remove this once functionality verified with actual midi keyboard

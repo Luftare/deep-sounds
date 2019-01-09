@@ -1,7 +1,7 @@
 const MIN_FREQUENCY = 40;
 const OCTAVES = 6;
 const SILENCE = 0.0001;
-const DISCONNECT_OFFSET_TIME = 1000;
+const DISCONNECT_OFFSET_TIME = 100;
 
 function yToFrequency(y) {
   const height = 1 - y;
@@ -13,7 +13,7 @@ export default class LinePlayer {
   constructor({ ctx, destination }) {
     this.ctx = ctx;
     this.destination = destination;
-    this.level = 1;
+    this.level = 0.4;
     this.waveform = 'sine';
   }
 
