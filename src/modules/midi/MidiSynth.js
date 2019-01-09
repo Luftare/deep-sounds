@@ -1,4 +1,5 @@
 const SILENCE = 0.0001;
+const DISCONNECT_OFFSET_TIME = 1000;
 
 function midiNumberToFrequency(midiNumber) {
   return 440 * Math.pow(2, (midiNumber - 69) / 12);
@@ -58,23 +59,35 @@ export default class MidiSynth {
     const { ctx, destination } = this;
     const osc = ctx.createOscillator();
     const env = ctx.createGain();
+    const lowPassFilter = ctx.createBiquadFilter();
+    const lowPassStartFrequency = 14000;
+    const lowPassEndFrequency = 200;
+    const lowPassDiveDuration = 250;
     const gainValue = velocity / 127;
 
-    osc.type = 'sawtooth';
+    lowPassFilter.frequency.value = lowPassStartFrequency;
+    lowPassFilter.Q.value = 8;
+    osc.type = 'square';
     env.gain.value = SILENCE;
     osc.frequency.value = frequency;
 
     osc.connect(env);
-    env.connect(destination);
+    env.connect(lowPassFilter);
+    lowPassFilter.connect(destination)
     osc.start(0);
     env.gain.exponentialRampToValueAtTime(
       gainValue,
       ctx.currentTime + attackInMs / 1000
     );
+    lowPassFilter.frequency.exponentialRampToValueAtTime(
+      lowPassEndFrequency,
+      ctx.currentTime + lowPassDiveDuration / 1000
+    );
 
     const note = {
       osc,
       env,
+      lowPassFilter
     };
 
     this.notes[midiNumber] = note;
@@ -84,7 +97,7 @@ export default class MidiSynth {
     if (!this.notes[midiNumber]) return;
 
     const { ctx } = this;
-    const { osc, env } = this.notes[midiNumber];
+    const { osc, env, lowPassFilter } = this.notes[midiNumber];
     const releaseInMs = 100;
 
     this.notes[midiNumber] = null;
@@ -99,6 +112,7 @@ export default class MidiSynth {
       osc.stop(0);
       osc.disconnect();
       env.disconnect();
-    }, releaseInMs);
+      lowPassFilter.disconnect();
+    }, releaseInMs + DISCONNECT_OFFSET_TIME);
   }
 }

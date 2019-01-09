@@ -11,6 +11,7 @@ function createNoiseBuffer(ctx) {
     leftChannelData[i] = (Math.random() - 0.5) * 2;
     rightChannelData[i] = (Math.random() - 0.5) * 2;
   }
+
   return buffer;
 }
 
