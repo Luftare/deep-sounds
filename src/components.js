@@ -20,6 +20,18 @@ export const MasterControls = styled.div`
     font-size: 20px;
   }
 
+  .overdrive-gain {
+    &__input {
+      width: 120px;
+    }
+    
+    &__label {
+      width: 40px;
+      text-align: center;
+      font-size: 20px;
+    }
+  }
+
   > * {
     margin-left: 10px !important;
     margin-right: 10px !important;

@@ -13,7 +13,7 @@ export default class Drums extends Component {
 
     this.drumInstrument = new DrumInstrument({
       ctx: audioMixer.ctx,
-      destination: audioMixer.masterGain,
+      destination: audioMixer.input,
     });
 
     this.state = {

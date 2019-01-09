@@ -16,6 +16,7 @@ class App extends Component {
       step: 0,
       active: false,
       BPM: this.ticker.getBPM(),
+      overdriveGain: 0,
     };
   }
 
@@ -32,6 +33,15 @@ class App extends Component {
     this.ticker.setBPM(BPM);
     this.setState({
       BPM,
+    });
+  };
+
+  handleOverdriveGainChange = e => {
+    const { audioMixer } = this.props;
+    const overdriveGain = parseFloat(e.target.value);
+    audioMixer.overdrive.gain = overdriveGain;
+    this.setState({
+      overdriveGain,
     });
   };
 
@@ -59,7 +69,7 @@ class App extends Component {
   };
 
   render() {
-    const { step, active, BPM } = this.state;
+    const { step, active, BPM, overdriveGain } = this.state;
     const { audioMixer } = this.props;
     const stepTime = this.ticker.getIntervalTime();
 
@@ -94,6 +104,16 @@ class App extends Component {
             onChange={this.handleTempoChange}
           />
           <span className="BPM">{BPM}</span>
+          <input
+            type="range"
+            className="overdrive-gain__input"
+            min="0"
+            max="1"
+            step="0.01"
+            defaultValue={overdriveGain}
+            onChange={this.handleOverdriveGainChange}
+          />
+          <span className="overdrive-gain__label">{overdriveGain}</span>
         </MasterControls>
       </>
     );
