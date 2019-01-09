@@ -17,6 +17,7 @@ class App extends Component {
       active: false,
       BPM: this.ticker.getBPM(),
       overdriveGain: 0,
+      filterValue: 0,
     };
   }
 
@@ -45,6 +46,25 @@ class App extends Component {
     });
   };
 
+  handleFilterValueChange = e => {
+    const { audioMixer } = this.props;
+    const filterValue = parseFloat(e.target.value);
+    audioMixer.doubleFilter.setValue(filterValue);
+    this.setState({
+      filterValue,
+    });
+  };
+
+  resetFilterValue = e => {
+    const { audioMixer } = this.props;
+    const filterValue = 0;
+    e.target.value = filterValue;
+    audioMixer.doubleFilter.setValue(filterValue);
+    this.setState({
+      filterValue,
+    });
+  }
+
   startSequence = () => {
     this.setState(
       () => ({
@@ -69,7 +89,7 @@ class App extends Component {
   };
 
   render() {
-    const { step, active, BPM, overdriveGain } = this.state;
+    const { step, active, BPM, overdriveGain, filterValue } = this.state;
     const { audioMixer } = this.props;
     const stepTime = this.ticker.getIntervalTime();
 
@@ -106,12 +126,21 @@ class App extends Component {
           <span className="range-label" role="img" aria-label="Clock">🔥</span>
           <input
             type="range"
-            className="overdrive-gain__input"
             min="0"
             max="1"
             step="0.01"
             defaultValue={overdriveGain}
             onChange={this.handleOverdriveGainChange}
+          />
+          <span className="range-label" role="img" aria-label="Scissors">✂️</span>
+          <input
+            type="range"
+            min="-1"
+            max="1"
+            step="0.01"
+            defaultValue={filterValue}
+            onDoubleClick={this.resetFilterValue}
+            onChange={this.handleFilterValueChange}
           />
         </MasterControls>
       </>
