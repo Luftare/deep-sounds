@@ -116,7 +116,7 @@ class App extends Component {
 
     return (
       <>
-        <InstrumentRack>
+        <InstrumentRack patternIndex={patternIndex}>
           <Drums
             step={step}
             audioMixer={audioMixer}

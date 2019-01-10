@@ -14,7 +14,7 @@ export const MasterControls = styled.div`
     font-size: 28px;
   }
 
-  input[type="range"] {
+  input[type='range'] {
     width: 120px;
   }
 
@@ -24,7 +24,21 @@ export const MasterControls = styled.div`
   }
 `;
 
-export const InstrumentRack = styled.div``;
+export const InstrumentRack = styled.div`
+  background-color: ${({ patternIndex }) =>
+    [
+      'lime',
+      'transparent',
+      'mediumslateblue',
+      'purple',
+      'darkgrey',
+      'magenta',
+      'lightblue',
+      'lightgreen',
+      'goldenrod',
+      'cyan',
+    ][patternIndex]};
+`;
 
 export const ModuleContainer = styled.div`
   position: relative;
