@@ -203,7 +203,11 @@ export default class Speech extends Component {
               />
             </SlideControl>
           </SpeechControls>
-          <textarea ref={this.textareaRef} onChange={this.handleTextChange} />
+          <textarea
+            ref={this.textareaRef}
+            onChange={this.handleTextChange}
+            onKeyDown={e => e.stopPropagation()}
+          />
           {currentLine && <Prompter>{currentLine}</Prompter>}
         </Container>
       </ModuleContainer>
