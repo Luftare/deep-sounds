@@ -11,6 +11,14 @@ export default class MidiSynth {
     this.destination = destination;
     this.notes = [];
     this.gain = 0.5;
+    this.waveforms = ['sine', 'square', 'sawtooth', 'triangle'];
+    this.waveform = this.waveforms[2];
+
+    this.attack = 20;
+    this.release = 500;
+    this.filterFrequency = 400;
+    this.filterModStartFrequency = 800;
+    this.filterModDecay = 300;
 
     if (this.canUseMidi()) {
       navigator
@@ -54,35 +62,32 @@ export default class MidiSynth {
     if (noteAlreadyExists) {
       this.stopNote(midiNumber);
     }
-    const attackInMs = 12;
 
     const frequency = midiNumberToFrequency(midiNumber);
     const { ctx, destination } = this;
     const osc = ctx.createOscillator();
     const env = ctx.createGain();
     const lowPassFilter = ctx.createBiquadFilter();
-    const lowPassStartFrequency = 14000;
-    const lowPassEndFrequency = 400;
-    const lowPassDiveDuration = 1000;
     const gainValue = this.gain * velocity / 127;
 
-    lowPassFilter.frequency.value = lowPassStartFrequency;
+    lowPassFilter.frequency.value = this.filterModStartFrequency;
     lowPassFilter.Q.value = 2;
-    osc.type = 'sawtooth';
+    osc.type = this.waveform;
     env.gain.value = SILENCE;
     osc.frequency.value = frequency;
 
     osc.connect(env);
     env.connect(lowPassFilter);
-    lowPassFilter.connect(destination)
+    lowPassFilter.connect(destination);
+
     osc.start(0);
     env.gain.exponentialRampToValueAtTime(
       gainValue,
-      ctx.currentTime + attackInMs / 1000
+      ctx.currentTime + this.attack / 1000
     );
     lowPassFilter.frequency.exponentialRampToValueAtTime(
-      lowPassEndFrequency,
-      ctx.currentTime + lowPassDiveDuration / 1000
+      this.filterFrequency,
+      ctx.currentTime + this.filterModDecay / 1000
     );
 
     const note = {
@@ -99,14 +104,13 @@ export default class MidiSynth {
 
     const { ctx } = this;
     const { osc, env, lowPassFilter } = this.notes[midiNumber];
-    const releaseInMs = 500;
 
     this.notes[midiNumber] = null;
 
     env.gain.cancelScheduledValues(0);
     env.gain.linearRampToValueAtTime(
       SILENCE,
-      ctx.currentTime + releaseInMs / 1000
+      ctx.currentTime + this.release / 1000
     );
 
     setTimeout(() => {
@@ -114,6 +118,6 @@ export default class MidiSynth {
       osc.disconnect();
       env.disconnect();
       lowPassFilter.disconnect();
-    }, releaseInMs + DISCONNECT_OFFSET_TIME);
+    }, this.release + DISCONNECT_OFFSET_TIME);
   }
 }

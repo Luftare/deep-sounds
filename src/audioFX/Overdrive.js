@@ -6,7 +6,7 @@ function hardClipCurve(value, gain) {
   return multiplier * Math.min(maxValue, Math.abs(value)) * sign;
 }
 
-export default class Overdrive {
+export default class Overdrive implements Connectable {
   constructor(ctx) {
     const bufferSize = 2 ** 10;
     const channelsCount = 1;
@@ -18,7 +18,7 @@ export default class Overdrive {
       for (let channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
         const inputData = inputBuffer.getChannelData(channel);
         const outputData = outputBuffer.getChannelData(channel);
-    
+
         for (let sample = 0; sample < inputBuffer.length; sample++) {
           const outputValue = this.gain === 0 ? inputData[sample] : hardClipCurve(inputData[sample], this.gain);
           outputData[sample] = outputValue;
