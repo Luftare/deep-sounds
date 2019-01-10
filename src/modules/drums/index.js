@@ -5,6 +5,7 @@ import DrumInstrument from './DrumsInstrument';
 
 const INIT_SEQUENCE_LENGTH = 8;
 let keyGenerator = 1;
+const patterns = [];
 
 export default class Drums extends Component {
   constructor(props) {
@@ -16,7 +17,15 @@ export default class Drums extends Component {
       destination: audioMixer.input,
     });
 
+    patterns[props.patternIndex] = this.getEmptyPatternState();
+
     this.state = {
+      ...patterns[props.patternIndex],
+    };
+  }
+
+  getEmptyPatternState() {
+    return {
       sequenceLength: INIT_SEQUENCE_LENGTH,
       sequences: this.drumInstrument.sounds.map(() =>
         [...Array(INIT_SEQUENCE_LENGTH)].map(() => false)
@@ -51,8 +60,15 @@ export default class Drums extends Component {
     const nextSequenceStepReceived =
       prevProps.step !== this.props.step && this.props.step >= 0;
 
+    const patternIndexChanged =
+      prevProps.patternIndex !== this.props.patternIndex;
+
     if (nextSequenceStepReceived) {
       this.handleNewStep();
+    }
+
+    if (patternIndexChanged) {
+      this.handlePatternChange(prevProps.patternIndex);
     }
     return null;
   }
@@ -65,6 +81,21 @@ export default class Drums extends Component {
         sound.trigger();
       }
     });
+  }
+
+  handlePatternChange(previousPatternIndex) {
+    const pattern = patterns[this.props.patternIndex];
+    const patternExists = !!pattern;
+
+    patterns[previousPatternIndex] = { ...this.state };
+
+    if (patternExists) {
+      this.setState({ ...pattern });
+    } else {
+      const emptyPattern = this.getEmptyPatternState();
+      patterns[this.props.patternIndex] = emptyPattern;
+      this.setState({ ...emptyPattern });
+    }
   }
 
   componentDidUpdate() {}

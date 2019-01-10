@@ -13,12 +13,26 @@ class App extends Component {
     this.ticker = props.ticker;
 
     this.state = {
+      patternIndex: 1,
       step: 0,
       active: false,
       BPM: this.ticker.getBPM(),
       overdriveGain: 0,
       filterValue: 0,
     };
+
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
+    window.addEventListener('keydown', ({ key }) => {
+      const patternIndex = parseInt(key);
+      const isNumber = !isNaN(patternIndex);
+
+      if (isNumber) {
+        this.setState({ patternIndex });
+      }
+    });
   }
 
   componentDidMount() {
@@ -63,7 +77,7 @@ class App extends Component {
     this.setState({
       filterValue,
     });
-  }
+  };
 
   startSequence = () => {
     this.setState(
@@ -89,31 +103,49 @@ class App extends Component {
   };
 
   render() {
-    const { step, active, BPM, overdriveGain, filterValue } = this.state;
+    const {
+      step,
+      active,
+      BPM,
+      overdriveGain,
+      filterValue,
+      patternIndex,
+    } = this.state;
     const { audioMixer } = this.props;
     const stepTime = this.ticker.getIntervalTime();
 
     return (
       <>
         <InstrumentRack>
-          <Drums step={step} audioMixer={audioMixer} active={active} />
+          <Drums
+            step={step}
+            audioMixer={audioMixer}
+            active={active}
+            patternIndex={patternIndex}
+          />
           <Canvas
             step={step}
             stepTime={stepTime}
             audioMixer={audioMixer}
             active={active}
+            patternIndex={patternIndex}
           />
           <Speech
             step={step}
             stepTime={stepTime}
             audioMixer={audioMixer}
             active={active}
+            patternIndex={patternIndex}
           />
           <Midi audioMixer={audioMixer} />
         </InstrumentRack>
         <MasterControls>
-          <button onMouseDown={active ? this.stopSequence : this.startSequence}>{active ? 'Stop' : 'Start'}</button>
-          <span className="range-label" role="img" aria-label="Clock">⏰</span>
+          <button onMouseDown={active ? this.stopSequence : this.startSequence}>
+            {active ? 'Stop' : 'Start'}
+          </button>
+          <span className="range-label" role="img" aria-label="Clock">
+            ⏰
+          </span>
           <input
             type="range"
             className="tempo"
@@ -123,7 +155,9 @@ class App extends Component {
             defaultValue={BPM}
             onChange={this.handleTempoChange}
           />
-          <span className="range-label" role="img" aria-label="Clock">🔥</span>
+          <span className="range-label" role="img" aria-label="Clock">
+            🔥
+          </span>
           <input
             type="range"
             min="0"
@@ -132,7 +166,9 @@ class App extends Component {
             defaultValue={overdriveGain}
             onChange={this.handleOverdriveGainChange}
           />
-          <span className="range-label" role="img" aria-label="Scissors">✂️</span>
+          <span className="range-label" role="img" aria-label="Scissors">
+            ✂️
+          </span>
           <input
             type="range"
             min="-1"
