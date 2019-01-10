@@ -3,9 +3,9 @@ import styled from 'styled-components';
 export const Container = styled.div`
   display: grid;
   margin: 0 40px;
+  padding: 80px 0;
   box-sizing: border-box;
   grid-template-columns: repeat(3, 1fr);
-  height: 300px;
 `;
 
 export const ControlGroup = styled.div`
