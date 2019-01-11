@@ -22,16 +22,25 @@ export default class Ticker {
     this.BPM = BPM;
   }
 
-  tick() {
+  tick(previousOffsetTime = 0) {
     if (!this.active) {
       clearTimeout(this.timeoutId);
       return;
     }
-
+    
+    const now = Date.now();
+    const targetIntervalDuration = this.getIntervalTime();
+    const nextTimeoutDuration = targetIntervalDuration - previousOffsetTime;
+    
     this.onTick();
+
     this.timeoutId = setTimeout(() => {
-      this.tick();
-    }, this.getIntervalTime());
+      const nowAfterTimout = Date.now();
+      const timeoutActualDuration = nowAfterTimout - now;
+      const tickOffsetTime = timeoutActualDuration - nextTimeoutDuration;
+
+      this.tick(tickOffsetTime);
+    }, nextTimeoutDuration);
   }
 
   start() {

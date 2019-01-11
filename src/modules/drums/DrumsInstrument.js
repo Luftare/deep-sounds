@@ -1,5 +1,5 @@
-const silence = 0.00001;
-const disconnectTimeOffset = 1000;
+const SILENCE = 0.00001;
+const DISCONNECT_TIME_OFFSET = 100;
 
 function createNoiseBuffer(ctx) {
   const bufferSize = 4096 * 16;
@@ -11,6 +11,7 @@ function createNoiseBuffer(ctx) {
     leftChannelData[i] = (Math.random() - 0.5) * 2;
     rightChannelData[i] = (Math.random() - 0.5) * 2;
   }
+
   return buffer;
 }
 
@@ -51,7 +52,7 @@ export default class DrumInstrument {
           noise.start();
 
           env.gain.exponentialRampToValueAtTime(
-            silence,
+            SILENCE,
             ctx.currentTime + release * 0.001
           );
 
@@ -59,7 +60,7 @@ export default class DrumInstrument {
             noise.stop();
             noise.disconnect();
             env.disconnect();
-          }, release + disconnectTimeOffset);
+          }, release + DISCONNECT_TIME_OFFSET);
         },
       },
       {
@@ -84,7 +85,7 @@ export default class DrumInstrument {
           noise.start();
 
           env.gain.exponentialRampToValueAtTime(
-            silence,
+            SILENCE,
             ctx.currentTime + release * 0.001
           );
 
@@ -92,7 +93,7 @@ export default class DrumInstrument {
             noise.stop();
             noise.disconnect();
             env.disconnect();
-          }, release + disconnectTimeOffset);
+          }, release + DISCONNECT_TIME_OFFSET);
         },
       },
       {
@@ -104,8 +105,8 @@ export default class DrumInstrument {
           const hold = 50;
           const release = 100;
           const diveTime = 20;
-          const startFrq = 1000;
-          const endFrq = 180;
+          const startFrq = 2000;
+          const endFrq = 220;
 
           const noise = createNoiseNode(noiseBuffer, ctx);
           const noiseLowpassFilter = ctx.createBiquadFilter();
@@ -114,7 +115,7 @@ export default class DrumInstrument {
           const env = ctx.createGain();
 
           osc.frequency.value = startFrq;
-          env.gain.value = silence;
+          env.gain.value = SILENCE;
           noiseLowpassFilter.frequency.value = 2000;
           noiseGain.gain.value = 1;
 
@@ -139,7 +140,7 @@ export default class DrumInstrument {
             env.gain.cancelScheduledValues(ctx.currentTime);
 
             env.gain.exponentialRampToValueAtTime(
-              silence,
+              SILENCE,
               ctx.currentTime + release * 0.001
             );
             setTimeout(() => {
@@ -150,7 +151,7 @@ export default class DrumInstrument {
               env.disconnect();
               noise.disconnect();
               noiseGain.disconnect();
-            }, release + disconnectTimeOffset);
+            }, release + DISCONNECT_TIME_OFFSET);
           }, attack + hold);
         },
       },
@@ -170,7 +171,7 @@ export default class DrumInstrument {
           const env = ctx.createGain();
 
           osc.frequency.value = startFrq;
-          env.gain.value = silence;
+          env.gain.value = SILENCE;
 
           osc.connect(env);
           env.connect(masterGain);
@@ -189,14 +190,14 @@ export default class DrumInstrument {
             env.gain.cancelScheduledValues(ctx.currentTime);
 
             env.gain.exponentialRampToValueAtTime(
-              silence,
+              SILENCE,
               ctx.currentTime + release * 0.001
             );
             setTimeout(() => {
               osc.stop();
               osc.disconnect();
               env.disconnect();
-            }, release + disconnectTimeOffset);
+            }, release + DISCONNECT_TIME_OFFSET);
           }, attack + hold);
         },
       },

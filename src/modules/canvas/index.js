@@ -12,6 +12,7 @@ import LinePlayer from './LinePlayer';
 
 const LINE_MIN_X_DIFF = 0.005;
 const INIT_SEQUENCE_LENGTH = 8;
+const patterns = [];
 
 function getRelativeCoordinates(e) {
   const { width, height } = e.target;
@@ -28,13 +29,23 @@ export default class Canvas extends Component {
     const { audioMixer } = props;
 
     this.linePlayer = new LinePlayer({
-      destination: audioMixer.masterGain,
+      destination: audioMixer.input,
       ctx: audioMixer.ctx,
     });
 
     this.canvasRef = React.createRef();
+    this.transposeRef = React.createRef();
+    this.timingOffsetRef = React.createRef();
+
+    patterns[props.patternIndex] = this.getEmptyPatternState();
 
     this.state = {
+      ...patterns[props.patternIndex],
+    };
+  }
+
+  getEmptyPatternState() {
+    return {
       sequenceLength: INIT_SEQUENCE_LENGTH,
       cursorDown: false,
       transpose: 0,
@@ -60,6 +71,13 @@ export default class Canvas extends Component {
     const nextSequenceStepReceived =
       prevProps.step !== this.props.step && this.props.step >= 0;
 
+    const patternIndexChanged =
+      prevProps.patternIndex !== this.props.patternIndex;
+
+    if (patternIndexChanged) {
+      this.handlePatternChange(prevProps.patternIndex);
+    }
+
     if (nextSequenceStepReceived) {
       const step = this.getCurrentStep();
       const relativeStartX = step / this.state.sequenceLength;
@@ -80,6 +98,27 @@ export default class Canvas extends Component {
       });
     }
     return null;
+  }
+
+  handlePatternChange(previousPatternIndex) {
+    const pattern = patterns[this.props.patternIndex];
+    const patternExists = !!pattern;
+
+    patterns[previousPatternIndex] = { ...this.state };
+
+    if (patternExists) {
+      this.setState({ ...pattern }, () => {
+        this.transposeRef.current.value = this.state.transpose;
+        this.timingOffsetRef.current.value = this.state.timingOffset;
+      });
+    } else {
+      const emptyPattern = this.getEmptyPatternState();
+      patterns[this.props.patternIndex] = emptyPattern;
+      this.setState({ ...emptyPattern }, () => {
+        this.transposeRef.current.value = this.state.transpose;
+        this.timingOffsetRef.current.value = this.state.timingOffset;
+      });
+    }
   }
 
   handleTransposeChange = e => {
@@ -280,6 +319,7 @@ export default class Canvas extends Component {
             </div>
             <input
               type="range"
+              ref={this.transposeRef}
               className="transpose"
               defaultValue={this.state.transpose}
               onInput={this.handleTransposeChange}
@@ -290,6 +330,7 @@ export default class Canvas extends Component {
             />
             <input
               type="range"
+              ref={this.timingOffsetRef}
               className="timing-offset"
               defaultValue={this.state.timingOffset}
               onInput={this.handleTimingOffsetChange}

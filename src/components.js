@@ -10,14 +10,12 @@ export const MasterControls = styled.div`
   align-items: center;
   padding: 20px;
 
-  .tempo {
-    width: 120px;
+  .range-label {
+    font-size: 28px;
   }
 
-  .BPM {
-    width: 40px;
-    text-align: center;
-    font-size: 20px;
+  input[type='range'] {
+    width: 120px;
   }
 
   > * {
@@ -26,7 +24,21 @@ export const MasterControls = styled.div`
   }
 `;
 
-export const InstrumentRack = styled.div``;
+export const InstrumentRack = styled.div`
+  background-color: ${({ patternIndex }) =>
+    [
+      'lime',
+      'transparent',
+      'mediumslateblue',
+      'purple',
+      'darkgrey',
+      'magenta',
+      'lightblue',
+      'lightgreen',
+      'goldenrod',
+      'cyan',
+    ][patternIndex]};
+`;
 
 export const ModuleContainer = styled.div`
   position: relative;
