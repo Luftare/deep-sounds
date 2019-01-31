@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { InstrumentRack, MasterControls } from './components';
+import { InstrumentRack, MasterControls, PatternIndicator } from './components';
 
 import Drums from './modules/drums';
 import Canvas from './modules/canvas';
@@ -113,9 +113,13 @@ class App extends Component {
     } = this.state;
     const { audioMixer } = this.props;
     const stepTime = this.ticker.getIntervalTime();
+    const patternIndexKeyboardNumber = patternIndex === 0 ? 10 : patternIndex;
 
     return (
       <>
+        <PatternIndicator patternIndex={patternIndex}>
+          {patternIndexKeyboardNumber}
+        </PatternIndicator>
         <InstrumentRack patternIndex={patternIndex}>
           <Drums
             step={step}
