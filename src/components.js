@@ -24,13 +24,35 @@ export const MasterControls = styled.div`
   }
 `;
 
-export const InstrumentRack = styled.div`
+export const InstrumentRack = styled.div``;
+
+export const ModuleContainer = styled.div`
+  position: relative;
+  padding: 80px 0;
+  margin: 0 40px;
+`;
+
+export const PatternIndicator = styled.span`
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 12px;
+  padding-bottom: 12px;
+  box-sizing: border-box;
+  height: 40px;
+  width: 40px;
+  font-weight: 600;
+
+  border-bottom-left-radius: 44px;
   background-color: ${({ patternIndex }) =>
     [
       'lime',
-      'transparent',
+      'orange',
       'mediumslateblue',
-      'purple',
+      'hotpink',
       'darkgrey',
       'magenta',
       'lightblue',
@@ -38,10 +60,4 @@ export const InstrumentRack = styled.div`
       'goldenrod',
       'cyan',
     ][patternIndex]};
-`;
-
-export const ModuleContainer = styled.div`
-  position: relative;
-  padding: 80px 0;
-  margin: 0 40px;
 `;
