@@ -5,6 +5,7 @@ import Drums from './modules/drums';
 import Canvas from './modules/canvas';
 import Speech from './modules/speech';
 import Midi from './modules/midi';
+import SampleBank from './modules/sampleBank';
 
 class App extends Component {
   constructor(props) {
@@ -134,6 +135,7 @@ class App extends Component {
             active={active}
             patternIndex={patternIndex}
           />
+          <SampleBank audioMixer={audioMixer} />
           <Speech
             step={step}
             stepTime={stepTime}
