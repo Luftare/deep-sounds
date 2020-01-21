@@ -1,7 +1,7 @@
 const MIN_FREQUENCY = 40;
 const OCTAVES = 6;
 const SILENCE = 0.0001;
-const DISCONNECT_OFFSET_TIME = 100;
+const DISCONNECT_OFFSET_TIME = 200;
 
 function yToFrequency(y) {
   const height = 1 - y;
@@ -62,9 +62,11 @@ export default class LinePlayer {
         }
       }
     });
-    osc.start(startTime);
+    
     env.gain.setTargetAtTime(this.level, startTime, attack * 0.001);
     env.gain.setTargetAtTime(SILENCE, stopTime, release * 0.001);
+
+    osc.start(startTime);
     osc.stop(stopTime + release * 0.001 + DISCONNECT_OFFSET_TIME * 0.001);
 
     setTimeout(() => {

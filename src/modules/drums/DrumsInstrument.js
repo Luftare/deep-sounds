@@ -1,5 +1,5 @@
 const SILENCE = 0.00001;
-const DISCONNECT_TIME_OFFSET = 100;
+const DISCONNECT_TIME_OFFSET = 1000;
 
 function createNoiseBuffer(ctx) {
   const bufferSize = 4096 * 16;
@@ -98,12 +98,12 @@ export default class DrumInstrument {
       },
       {
         label: 'Snare',
-        level: 0.8,
+        level: 1.0,
         muted: false,
         trigger() {
           const attack = 5;
-          const hold = 50;
-          const release = 100;
+          const hold = 0;
+          const release = 30;
           const diveTime = 20;
           const startFrq = 2000;
           const endFrq = 220;
@@ -127,32 +127,29 @@ export default class DrumInstrument {
 
           osc.start();
           noise.start();
-          env.gain.exponentialRampToValueAtTime(
-            this.level,
-            ctx.currentTime + attack * 0.001
+
+          env.gain.setTargetAtTime(this.level, ctx.currentTime, attack / 1000);
+          env.gain.setTargetAtTime(
+            SILENCE,
+            ctx.currentTime + attack / 1000,
+            release / 1000
           );
           osc.frequency.exponentialRampToValueAtTime(
             endFrq,
             ctx.currentTime + diveTime * 0.001
           );
 
-          setTimeout(() => {
-            env.gain.cancelScheduledValues(ctx.currentTime);
+          const timeout = attack + hold + release + DISCONNECT_TIME_OFFSET;
 
-            env.gain.exponentialRampToValueAtTime(
-              SILENCE,
-              ctx.currentTime + release * 0.001
-            );
-            setTimeout(() => {
-              osc.stop();
-              noise.stop();
-              noiseLowpassFilter.disconnect();
-              osc.disconnect();
-              env.disconnect();
-              noise.disconnect();
-              noiseGain.disconnect();
-            }, release + DISCONNECT_TIME_OFFSET);
-          }, attack + hold);
+          setTimeout(() => {
+            osc.stop();
+            noise.stop();
+            noiseLowpassFilter.disconnect();
+            osc.disconnect();
+            env.disconnect();
+            noise.disconnect();
+            noiseGain.disconnect();
+          }, timeout);
         },
       },
       {
@@ -162,9 +159,9 @@ export default class DrumInstrument {
         trigger() {
           const attack = 10;
           const hold = 50;
-          const release = 200;
+          const release = 100;
           const diveTime = 30;
-          const startFrq = 2000;
+          const startFrq = 1400;
           const endFrq = 60;
 
           const osc = ctx.createOscillator();
@@ -176,29 +173,25 @@ export default class DrumInstrument {
           osc.connect(env);
           env.connect(masterGain);
 
-          osc.start();
-          env.gain.exponentialRampToValueAtTime(
-            this.level,
-            ctx.currentTime + attack * 0.001
+          env.gain.setTargetAtTime(this.level, ctx.currentTime, attack / 1000);
+          env.gain.setTargetAtTime(
+            SILENCE,
+            ctx.currentTime + attack / 1000,
+            release / 1000
           );
           osc.frequency.exponentialRampToValueAtTime(
             endFrq,
             ctx.currentTime + diveTime * 0.001
           );
+          osc.start();
+
+          const timeout = attack + hold + release + DISCONNECT_TIME_OFFSET;
 
           setTimeout(() => {
-            env.gain.cancelScheduledValues(ctx.currentTime);
-
-            env.gain.exponentialRampToValueAtTime(
-              SILENCE,
-              ctx.currentTime + release * 0.001
-            );
-            setTimeout(() => {
-              osc.stop();
-              osc.disconnect();
-              env.disconnect();
-            }, release + DISCONNECT_TIME_OFFSET);
-          }, attack + hold);
+            osc.stop();
+            osc.disconnect();
+            env.disconnect();
+          }, timeout);
         },
       },
     ];
