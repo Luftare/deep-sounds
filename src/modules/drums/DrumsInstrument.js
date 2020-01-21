@@ -154,14 +154,14 @@ export default class DrumInstrument {
       },
       {
         label: 'Kick',
-        level: 1,
+        level: 1.5,
         muted: false,
         trigger() {
           const attack = 10;
-          const hold = 50;
-          const release = 100;
-          const diveTime = 30;
-          const startFrq = 1400;
+          const hold = 0;
+          const release = 50;
+          const diveTime = 25;
+          const startFrq = 2000;
           const endFrq = 60;
 
           const osc = ctx.createOscillator();
