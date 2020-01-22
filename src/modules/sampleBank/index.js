@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { Howl, Howler } from 'howler';
+import { Howl } from 'howler';
+import samples from './samples';
 
 export const PadContainer = styled.div`
   display: grid;
@@ -20,37 +21,45 @@ const Pad = styled.div`
   cursor: pointer;
   color: white;
   font-size: 36px;
+  transition: all 100ms;
+
+  :active {
+    opacity: 0.8;
+  }
 `;
 
 export default ({ audioMixer }) => {
-  const samples = [
-    {
-      label: 'Cat',
-      color: '#843',
-      src: require('./samples/cat.mp3'),
-      volume: 1.4,
-    },
-    {
-      label: 'Laser',
-      color: '#348',
-      src: require('./samples/laser.mp3'),
-      volume: 0.9,
-    },
-    {
-      label: 'Laugh',
-      color: '#838',
-      src: require('./samples/laugh.mp3'),
-      volume: 0.9,
-    },
-    {
-      label: 'Night',
-      color: '#383',
-      src: require('./samples/night.mp3'),
-      volume: 2,
-    },
-  ];
+  useEffect(() => {
+    const keysDown = {};
 
-  const triggerSample = ({ src, volume }) => e => {
+    const handleKeyDown = ({ key }) => {
+      const lowKey = key.toLowerCase();
+      if (keysDown[lowKey]) return;
+
+      keysDown[lowKey] = true;
+      const sampleHotKeys = ['a', 's', 'd', 'f'];
+      const sampleIndex = sampleHotKeys.indexOf(lowKey);
+
+      const sample = samples[sampleIndex];
+
+      if (sample) {
+        triggerSample(sample)();
+      }
+    };
+
+    const handleKeyUp = ({ key }) => {
+      keysDown[key.toLowerCase()] = false;
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
+  const triggerSample = ({ src, volume }) => () => {
     new Howl({
       src: [src],
       volume,

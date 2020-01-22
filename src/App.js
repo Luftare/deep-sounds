@@ -26,13 +26,29 @@ class App extends Component {
   }
 
   setupEventListeners() {
-    window.addEventListener('keydown', ({ key }) => {
-      const patternIndex = parseInt(key);
+    const keysDown = {};
+
+    window.addEventListener('keydown', e => {
+      const { key } = e;
+      const lowKey = key.toLowerCase();
+      if (keysDown[lowKey]) return;
+
+      keysDown[lowKey] = true;
+      const patternIndex = parseInt(lowKey);
       const isNumber = !isNaN(patternIndex);
 
       if (isNumber) {
         this.setState({ patternIndex });
       }
+
+      if (lowKey === ' ') {
+        e.preventDefault();
+        this.state.active ? this.stopSequence() : this.startSequence();
+      }
+    });
+
+    window.addEventListener('keyup', ({ key }) => {
+      keysDown[key.toLowerCase()] = false;
     });
   }
 
