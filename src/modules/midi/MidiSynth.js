@@ -6,13 +6,14 @@ function midiNumberToFrequency(midiNumber) {
 }
 
 export default class MidiSynth {
-  constructor({ ctx, destination }) {
+  constructor({ ctx, destination, onControlSignal }) {
     this.ctx = ctx;
     this.destination = destination;
     this.notes = [];
     this.gain = 0.5;
     this.waveforms = ['sine', 'square', 'sawtooth', 'triangle'];
     this.waveform = this.waveforms[2];
+    this.onControlSignal = onControlSignal;
 
     this.attack = 20;
     this.release = 500;
@@ -46,13 +47,20 @@ export default class MidiSynth {
     const [typeNumber, midiNumber, velocity] = data;
     const MIDI_MESSAGE_START_NOTE = 144;
     const MIDI_MESSAGE_STOP_NOTE = 128;
+    const MIDI_MESSAGE_CONTROL_SIGNAL = 188;
 
-    if (typeNumber === MIDI_MESSAGE_START_NOTE) {
-      this.startNote(midiNumber, velocity);
-    }
-
-    if (typeNumber === MIDI_MESSAGE_STOP_NOTE) {
-      this.stopNote(midiNumber);
+    switch (typeNumber) {
+      case MIDI_MESSAGE_START_NOTE:
+        this.startNote(midiNumber, velocity);
+        break;
+      case MIDI_MESSAGE_STOP_NOTE:
+        this.stopNote(midiNumber);
+        break;
+      case MIDI_MESSAGE_CONTROL_SIGNAL:
+        this.onControlSignal([midiNumber, velocity]);
+        break;
+      default:
+        break;
     }
   };
 

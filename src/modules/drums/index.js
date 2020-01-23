@@ -14,7 +14,7 @@ export default class Drums extends Component {
 
     this.drumInstrument = new DrumInstrument({
       ctx: audioMixer.ctx,
-      destination: audioMixer.input,
+      destination: audioMixer.drumsVolume,
     });
 
     patterns[props.patternIndex] = this.getEmptyPatternState();
@@ -49,8 +49,8 @@ export default class Drums extends Component {
       sequences: sequences.map((sequence, sequenceIterationIndex) =>
         sequenceIterationIndex === sequenceIndex
           ? sequence.map((step, stepIterationIndex) =>
-              stepIterationIndex === stepIndex ? !step : step
-            )
+            stepIterationIndex === stepIndex ? !step : step
+          )
           : sequence
       ),
     }));
@@ -98,7 +98,7 @@ export default class Drums extends Component {
     }
   }
 
-  componentDidUpdate() {}
+  componentDidUpdate() { }
 
   getLocalStep() {
     return this.props.step % this.state.sequenceLength;

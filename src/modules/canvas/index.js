@@ -29,7 +29,7 @@ export default class Canvas extends Component {
     const { audioMixer } = props;
 
     this.linePlayer = new LinePlayer({
-      destination: audioMixer.input,
+      destination: audioMixer.linesVolume,
       ctx: audioMixer.ctx,
     });
 

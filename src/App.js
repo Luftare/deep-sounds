@@ -7,6 +7,12 @@ import Speech from './modules/speech';
 import Midi from './modules/midi';
 import SampleBank from './modules/sampleBank';
 
+const MIN_TEMPO = 40;
+const MAX_TEMPO = 240;
+
+const normalizedKnobValue = value => (value - 64) / (127 - 64);
+const normalizedSliderValue = value => value / 127;
+
 class App extends PureComponent {
   constructor(props) {
     super(props);
@@ -62,23 +68,37 @@ class App extends PureComponent {
 
   handleTempoChange = e => {
     const BPM = parseInt(e.target.value);
+    this.setBPM(BPM);
+  };
+
+  setBPM = BPM => {
     this.ticker.setBPM(BPM);
     this.setState({
       BPM,
     });
-  };
+  }
 
   handleOverdriveGainChange = e => {
-    const { audioMixer } = this.props;
     const overdriveGain = parseFloat(e.target.value);
-    audioMixer.overdrive.gain = overdriveGain;
+    this.setOverdriveGain(overdriveGain)
   };
 
-  handleFilterValueChange = e => {
+  setOverdriveGain = overdriveGain => {
     const { audioMixer } = this.props;
+    audioMixer.overdrive.gain = overdriveGain;
+    this.setState({ overdriveGain });
+  }
+
+  handleFilterValueChange = e => {
     const filterValue = parseFloat(e.target.value);
-    audioMixer.doubleFilter.setValue(filterValue);
+    this.setFilterValue(filterValue);
   };
+
+  setFilterValue = filterValue => {
+    const { audioMixer } = this.props;
+    audioMixer.doubleFilter.setValue(filterValue);
+    this.setState({ filterValue });
+  }
 
   resetFilterValue = e => {
     const { audioMixer } = this.props;
@@ -111,6 +131,36 @@ class App extends PureComponent {
         this.ticker.stop();
       }
     );
+  };
+
+  handleControlSignal = ([channel, value]) => {
+    console.log(channel, value);
+    const normKnob = normalizedKnobValue(value);
+    const normSlider = normalizedSliderValue(value);
+
+    switch (channel) {
+      case 2: // tempo
+        this.setBPM(normKnob * (MAX_TEMPO - MIN_TEMPO) + MIN_TEMPO);
+        break;
+      case 3: // overdrive
+        this.setOverdriveGain(normKnob);
+        break;
+      case 4: // double filter
+        this.setFilterValue(normKnob * 2 - 1);
+        break;
+      case 6: // drums volume
+        this.props.audioMixer.drumsVolume.gain.setTargetAtTime(normSlider, 0, 0.1);
+        break;
+      case 7: // lines volume
+        this.props.audioMixer.linesVolume.gain.setTargetAtTime(normSlider, 0, 0.1);
+        break;
+      case 8: // synth volume
+        this.props.audioMixer.synthVolume.gain.setTargetAtTime(normSlider, 0, 0.1);
+        break;
+
+      default:
+        break;
+    }
   };
 
   render() {
@@ -153,7 +203,7 @@ class App extends PureComponent {
             active={active}
             patternIndex={patternIndex}
           />
-          <Midi audioMixer={audioMixer} />
+          <Midi audioMixer={audioMixer} onControlSignal={this.handleControlSignal} />
         </InstrumentRack>
         <MasterControls>
           <button onMouseDown={active ? this.stopSequence : this.startSequence}>
@@ -165,13 +215,13 @@ class App extends PureComponent {
           <input
             type="range"
             className="tempo"
-            min="40"
-            max="240"
+            min={MIN_TEMPO}
+            max={MAX_TEMPO}
             step="1"
-            defaultValue={BPM}
+            value={BPM}
             onChange={this.handleTempoChange}
           />
-          <span className="range-label" role="img" aria-label="Clock">
+          <span className="range-label" role="img" aria-label="Fire">
             🔥
           </span>
           <input
@@ -179,7 +229,7 @@ class App extends PureComponent {
             min="0"
             max="1"
             step="0.01"
-            defaultValue={overdriveGain}
+            value={overdriveGain}
             onChange={this.handleOverdriveGainChange}
           />
           <span className="range-label" role="img" aria-label="Scissors">
@@ -190,7 +240,7 @@ class App extends PureComponent {
             min="-1"
             max="1"
             step="0.01"
-            defaultValue={filterValue}
+            value={filterValue}
             onDoubleClick={this.resetFilterValue}
             onChange={this.handleFilterValueChange}
           />

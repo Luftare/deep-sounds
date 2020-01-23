@@ -13,7 +13,7 @@ export default class Midi extends Component {
   constructor(props) {
     super(props);
 
-    const { audioMixer } = props;
+    const { audioMixer, onControlSignal } = props;
 
     this.state = {
       attack: 15,
@@ -26,7 +26,8 @@ export default class Midi extends Component {
 
     this.midiSynth = new MidiSynth({
       ctx: audioMixer.ctx,
-      destination: audioMixer.input,
+      destination: audioMixer.synthVolume,
+      onControlSignal,
     });
 
     this.midiSynth.attack = this.state.attack;
