@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import mitt from 'mitt';
 import { InstrumentRack, MasterControls, PatternIndicator } from './components';
 
 import Drums from './modules/drums';
@@ -6,6 +7,8 @@ import Canvas from './modules/canvas';
 import Speech from './modules/speech';
 import Midi from './modules/midi';
 import SampleBank from './modules/sampleBank';
+
+const bus = mitt();
 
 const MIN_TEMPO = 40;
 const MAX_TEMPO = 240;
@@ -148,6 +151,9 @@ class App extends PureComponent {
       case 4: // double filter
         this.setFilterValue(normKnob * 2 - 1);
         break;
+      case 5: // transpose lines
+        bus.emit('TRANSPOSE_LINES', ({ value: -normKnob + 0.5 }));
+        break;
       case 6: // drums volume
         this.props.audioMixer.drumsVolume.gain.setTargetAtTime(normSlider, 0, 0.1);
         break;
@@ -156,6 +162,46 @@ class App extends PureComponent {
         break;
       case 8: // synth volume
         this.props.audioMixer.synthVolume.gain.setTargetAtTime(normSlider, 0, 0.1);
+        break;
+      case 10: // sample 1
+        if (value === 127) {
+          bus.emit('TRIGGER_SAMPLE', { sampleIndex: 0 });
+        }
+        break;
+      case 11: // sample 2
+        if (value === 127) {
+          bus.emit('TRIGGER_SAMPLE', { sampleIndex: 1 });
+        }
+        break;
+      case 12: // sample 3
+        if (value === 127) {
+          bus.emit('TRIGGER_SAMPLE', { sampleIndex: 2 });
+        }
+        break;
+      case 13: // sample 4
+        if (value === 127) {
+          bus.emit('TRIGGER_SAMPLE', { sampleIndex: 3 });
+        }
+        break;
+      case 14: // pattern index
+        if (value === 127) {
+          this.setState({ patternIndex: 1 });
+        }
+        break;
+      case 15: // pattern index
+        if (value === 127) {
+          this.setState({ patternIndex: 2 });
+        }
+        break;
+      case 16: // pattern index
+        if (value === 127) {
+          this.setState({ patternIndex: 3 });
+        }
+        break;
+      case 17: // pattern index
+        if (value === 127) {
+          this.setState({ patternIndex: 4 });
+        }
         break;
 
       default:
@@ -194,8 +240,9 @@ class App extends PureComponent {
             audioMixer={audioMixer}
             active={active}
             patternIndex={patternIndex}
+            bus={bus}
           />
-          <SampleBank audioMixer={audioMixer} />
+          <SampleBank audioMixer={audioMixer} bus={bus} />
           <Speech
             step={step}
             stepTime={stepTime}

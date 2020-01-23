@@ -26,8 +26,11 @@ export default class Canvas extends Component {
   constructor(props) {
     super(props);
 
-    const { audioMixer } = props;
+    const { audioMixer, bus } = props;
 
+    bus.on('TRANSPOSE_LINES', ({ value }) => {
+      this.setTranspose(value);
+    });
     this.linePlayer = new LinePlayer({
       destination: audioMixer.linesVolume,
       ctx: audioMixer.ctx,
@@ -123,14 +126,17 @@ export default class Canvas extends Component {
 
   handleTransposeChange = e => {
     const transpose = parseFloat(e.target.value);
+    this.setTranspose(transpose);
+  };
 
+  setTranspose = transpose => {
     this.setState(
       {
         transpose,
       },
       this.paintCanvas
     );
-  };
+  }
 
   resetTranspose = e => {
     e.target.value = 0;
@@ -321,8 +327,8 @@ export default class Canvas extends Component {
               type="range"
               ref={this.transposeRef}
               className="transpose"
-              defaultValue={this.state.transpose}
-              onInput={this.handleTransposeChange}
+              value={this.state.transpose}
+              onChange={this.handleTransposeChange}
               onDoubleClick={this.resetTranspose}
               min="-0.5"
               max="0.5"

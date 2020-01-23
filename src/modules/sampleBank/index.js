@@ -28,7 +28,7 @@ const Pad = styled.div`
   }
 `;
 
-export default ({ audioMixer }) => {
+export default ({ audioMixer, bus }) => {
   useEffect(() => {
     const keysDown = {};
 
@@ -53,6 +53,11 @@ export default ({ audioMixer }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
+
+    bus.on('TRIGGER_SAMPLE', ({ sampleIndex }) => {
+      triggerSample(samples[sampleIndex])();
+    });
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
