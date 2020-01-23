@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { InstrumentRack, MasterControls, PatternIndicator } from './components';
 
 import Drums from './modules/drums';
@@ -7,7 +7,7 @@ import Speech from './modules/speech';
 import Midi from './modules/midi';
 import SampleBank from './modules/sampleBank';
 
-class App extends Component {
+class App extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -72,18 +72,12 @@ class App extends Component {
     const { audioMixer } = this.props;
     const overdriveGain = parseFloat(e.target.value);
     audioMixer.overdrive.gain = overdriveGain;
-    this.setState({
-      overdriveGain,
-    });
   };
 
   handleFilterValueChange = e => {
     const { audioMixer } = this.props;
     const filterValue = parseFloat(e.target.value);
     audioMixer.doubleFilter.setValue(filterValue);
-    this.setState({
-      filterValue,
-    });
   };
 
   resetFilterValue = e => {

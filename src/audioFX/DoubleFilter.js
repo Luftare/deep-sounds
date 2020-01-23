@@ -1,3 +1,5 @@
+import { throttle } from 'lodash';
+
 const MIN_FREQUENCY = 60;
 const MAX_FREQUENCY = 8000;
 const INPUT_WEIGHT_EXPONENT = 3;
@@ -13,18 +15,19 @@ export default class DoubleFilter {
     this.lowPassFilter.frequency.value = MAX_FREQUENCY;
 
     this.lowPassFilter.connect(this.highPassFilter);
+    this.setValue = throttle(this.setValueNow.bind(this), 50);
   }
 
-  setValue(value) {
+  setValueNow(value) {
     const { ctx } = this;
     this.lowPassFilter.frequency.cancelScheduledValues(ctx.currentTime);
     this.highPassFilter.frequency.cancelScheduledValues(ctx.currentTime);
 
 
-    if(value >= 0) {
+    if (value >= 0) {
       this.lowPassFilter.Q.cancelScheduledValues(ctx.currentTime);
       this.highPassFilter.Q.cancelScheduledValues(ctx.currentTime);
-      if(value === 0) {
+      if (value === 0) {
         this.lowPassFilter.Q.setTargetAtTime(1, ctx.currentTime, 0.1);
         this.highPassFilter.Q.setTargetAtTime(1, ctx.currentTime, 0.1);
       } else {

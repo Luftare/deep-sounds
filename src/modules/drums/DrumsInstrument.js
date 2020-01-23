@@ -98,7 +98,7 @@ export default class DrumInstrument {
       },
       {
         label: 'Snare',
-        level: 1.0,
+        level: 0.7,
         muted: false,
         trigger() {
           const attack = 5;
@@ -116,8 +116,8 @@ export default class DrumInstrument {
 
           osc.frequency.value = startFrq;
           env.gain.value = SILENCE;
-          noiseLowpassFilter.frequency.value = 2000;
-          noiseGain.gain.value = 1;
+          noiseLowpassFilter.frequency.value = 3000;
+          noiseGain.gain.value = 2.5;
 
           noise.connect(noiseLowpassFilter);
           noiseLowpassFilter.connect(noiseGain);
