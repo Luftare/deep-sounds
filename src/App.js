@@ -161,6 +161,9 @@ class App extends PureComponent {
       case 8: // synth volume
         this.props.audioMixer.synthVolume.gain.setTargetAtTime(normValue, 0, 0.1);
         break;
+      case 9: // master volume
+        this.props.audioMixer.masterGain.gain.setTargetAtTime(normValue * 0.1, 0, 0.01);
+        break;
       case 10: // sample 1
         if (value === 127) {
           bus.emit('TRIGGER_SAMPLE', { sampleIndex: 0 });
@@ -201,6 +204,18 @@ class App extends PureComponent {
           this.setState({ patternIndex: 4 });
         }
         break;
+      case 18: // drum mute (hihat)
+        bus.emit('TOGGLE_DRUM_MUTE', { drumIndex: 0 });
+        break;
+      case 19: // drum mute (open hihat)
+        bus.emit('TOGGLE_DRUM_MUTE', { drumIndex: 1 });
+        break;
+      case 20: // drum mute (snare)
+        bus.emit('TOGGLE_DRUM_MUTE', { drumIndex: 2 });
+        break;
+      case 21: // drum mute (kick)
+        bus.emit('TOGGLE_DRUM_MUTE', { drumIndex: 3 });
+        break;
       case 37: // play / stop
         if (value === 127) {
           this.state.active ? this.stopSequence() : this.startSequence();
@@ -236,6 +251,7 @@ class App extends PureComponent {
             audioMixer={audioMixer}
             active={active}
             patternIndex={patternIndex}
+            bus={bus}
           />
           <Canvas
             step={step}

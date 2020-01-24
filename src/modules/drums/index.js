@@ -10,7 +10,11 @@ const patterns = [];
 export default class Drums extends Component {
   constructor(props) {
     super(props);
-    const { audioMixer } = props;
+    const { audioMixer, bus } = props;
+
+    bus.on('TOGGLE_DRUM_MUTE', ({ drumIndex }) => {
+      this.toggleMute(drumIndex);
+    });
 
     this.drumInstrument = new DrumInstrument({
       ctx: audioMixer.ctx,
