@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { throttle } from 'lodash';
 import mitt from 'mitt';
 import { InstrumentRack, MasterControls, PatternIndicator } from './components';
 
@@ -10,11 +11,9 @@ import SampleBank from './modules/sampleBank';
 
 const bus = mitt();
 
+const KNOB_THROTTLE_TIME = 100;
 const MIN_TEMPO = 40;
 const MAX_TEMPO = 240;
-
-const normalizedKnobValue = value => (value - 64) / (127 - 64);
-const normalizedSliderValue = value => value / 127;
 
 class App extends PureComponent {
   constructor(props) {
@@ -74,34 +73,34 @@ class App extends PureComponent {
     this.setBPM(BPM);
   };
 
-  setBPM = BPM => {
+  setBPM = throttle(BPM => {
     this.ticker.setBPM(BPM);
     this.setState({
       BPM,
     });
-  }
+  }, KNOB_THROTTLE_TIME);
 
   handleOverdriveGainChange = e => {
     const overdriveGain = parseFloat(e.target.value);
-    this.setOverdriveGain(overdriveGain)
+    this.setOverdriveGain(overdriveGain);
   };
 
-  setOverdriveGain = overdriveGain => {
+  setOverdriveGain = throttle(overdriveGain => {
     const { audioMixer } = this.props;
     audioMixer.overdrive.gain = overdriveGain;
     this.setState({ overdriveGain });
-  }
+  }, KNOB_THROTTLE_TIME);
 
   handleFilterValueChange = e => {
     const filterValue = parseFloat(e.target.value);
     this.setFilterValue(filterValue);
   };
 
-  setFilterValue = filterValue => {
+  setFilterValue = throttle(filterValue => {
     const { audioMixer } = this.props;
     audioMixer.doubleFilter.setValue(filterValue);
     this.setState({ filterValue });
-  }
+  }, KNOB_THROTTLE_TIME);
 
   resetFilterValue = e => {
     const { audioMixer } = this.props;
@@ -138,30 +137,29 @@ class App extends PureComponent {
 
   handleControlSignal = ([channel, value]) => {
     console.log(channel, value);
-    const normKnob = normalizedKnobValue(value);
-    const normSlider = normalizedSliderValue(value);
+    const normValue = value / 127;
 
     switch (channel) {
       case 2: // tempo
-        this.setBPM(normKnob * (MAX_TEMPO - MIN_TEMPO) + MIN_TEMPO);
+        this.setBPM(normValue * (MAX_TEMPO - MIN_TEMPO) + MIN_TEMPO);
         break;
       case 3: // overdrive
-        this.setOverdriveGain(normKnob);
+        this.setOverdriveGain(normValue);
         break;
       case 4: // double filter
-        this.setFilterValue(normKnob * 2 - 1);
+        this.setFilterValue(normValue * 2 - 1);
         break;
       case 5: // transpose lines
-        bus.emit('TRANSPOSE_LINES', ({ value: -normKnob + 0.5 }));
+        bus.emit('TRANSPOSE_LINES', ({ value: -normValue + 0.5 }));
         break;
       case 6: // drums volume
-        this.props.audioMixer.drumsVolume.gain.setTargetAtTime(normSlider, 0, 0.1);
+        this.props.audioMixer.drumsVolume.gain.setTargetAtTime(normValue, 0, 0.1);
         break;
       case 7: // lines volume
-        this.props.audioMixer.linesVolume.gain.setTargetAtTime(normSlider, 0, 0.1);
+        this.props.audioMixer.linesVolume.gain.setTargetAtTime(normValue, 0, 0.1);
         break;
       case 8: // synth volume
-        this.props.audioMixer.synthVolume.gain.setTargetAtTime(normSlider, 0, 0.1);
+        this.props.audioMixer.synthVolume.gain.setTargetAtTime(normValue, 0, 0.1);
         break;
       case 10: // sample 1
         if (value === 127) {
@@ -201,6 +199,11 @@ class App extends PureComponent {
       case 17: // pattern index
         if (value === 127) {
           this.setState({ patternIndex: 4 });
+        }
+        break;
+      case 37: // play / stop
+        if (value === 127) {
+          this.state.active ? this.stopSequence() : this.startSequence();
         }
         break;
 
