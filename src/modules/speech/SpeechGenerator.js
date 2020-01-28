@@ -16,7 +16,7 @@ export default class SpeechGenerator {
   }
 
   speak(text, voice) {
-    const voiceKey = `${text}_${voice.name}_${this.rate}_${this.pitch}`;
+    const voiceKey = `${text}_${voice.name}_${this.rate}_${this.pitch}_${this.volume}`;
 
     if (this.speechCache[voiceKey]) {
       this.synth.speak(this.speechCache[voiceKey]);

@@ -28,6 +28,8 @@ const Pad = styled.div`
   }
 `;
 
+let masterVolume = 1;
+
 export default ({ audioMixer, bus }) => {
   useEffect(() => {
     const keysDown = {};
@@ -58,6 +60,10 @@ export default ({ audioMixer, bus }) => {
       triggerSample(samples[sampleIndex])();
     });
 
+    bus.on('SAMPLES_VOLUME_CHANGE', ({ volume }) => {
+      masterVolume = volume;
+    });
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
@@ -68,7 +74,7 @@ export default ({ audioMixer, bus }) => {
   const triggerSample = ({ src, volume }) => () => {
     new Howl({
       src: [src],
-      volume,
+      volume: volume * masterVolume,
     }).play();
   };
 

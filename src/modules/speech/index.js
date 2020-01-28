@@ -48,6 +48,10 @@ export default class Speech extends Component {
       this.setState({ muted });
     });
 
+    props.bus.on('SPEECH_VOLUME_CHANGE', ({ volume }) => {
+      this.speechGenerator.volume = volume;
+    });
+
     this.speechGenerator.synth.onvoiceschanged = () => {
       if (this.state.voices.length > 0) return;
 

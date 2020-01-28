@@ -220,11 +220,16 @@ class App extends PureComponent {
       case 22: // drum speech
         bus.emit('TOGGLE_SPEECH_MUTE', { muted: value === 127 });
         break;
-
       case 37: // play / stop
         if (value === 127) {
           this.state.active ? this.stopSequence() : this.startSequence();
         }
+        break;
+     case 47: // samples volume
+          bus.emit('SAMPLES_VOLUME_CHANGE', { volume: normValue });
+        break;
+     case 48: // speech volume
+          bus.emit('SPEECH_VOLUME_CHANGE', { volume: normValue });
         break;
 
       default:
