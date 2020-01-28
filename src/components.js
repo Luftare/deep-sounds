@@ -30,6 +30,8 @@ export const ModuleContainer = styled.div`
   position: relative;
   padding: 80px 0;
   margin: 0 40px;
+  opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
+  transition: opacity 300ms;
 `;
 
 export const PatternIndicator = styled.span`

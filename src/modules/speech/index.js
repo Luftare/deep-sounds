@@ -12,9 +12,9 @@ import { ModuleContainer } from '../../components';
 let keyCounter = 1;
 let nextSpeechTimeoutId = null;
 
-const TIMING_MAX_VALUE = 100;
-const TIMING_MIN_VALUE = -100;
-const DEFAULT_TIMING = 0;
+const TIMING_MAX_VALUE = 200;
+const TIMING_MIN_VALUE = 0;
+const DEFAULT_TIMING = 150;
 
 const PITCH_MIN_VALUE = 0.1;
 const PITCH_MAX_VALUE = 2;
@@ -37,9 +37,17 @@ export default class Speech extends Component {
       speechRate: DEFAULT_SPEECH_RATE,
       timingOffset: DEFAULT_TIMING,
       pitch: DEFAULT_PITCH,
+      muted: false,
     };
     this.speechGenerator.rate = DEFAULT_SPEECH_RATE;
     this.textareaRef = React.createRef();
+    this.nextSpeechTimeoutId = null;
+
+    props.bus.on('TOGGLE_SPEECH_MUTE', ({ muted }) => {
+      this.speechGenerator.interrupt();
+      clearTimeout(this.nextSpeechTimeoutId);
+      this.setState({ muted });
+    });
 
     this.speechGenerator.synth.onvoiceschanged = () => {
       if (this.state.voices.length > 0) return;
@@ -57,15 +65,22 @@ export default class Speech extends Component {
   componentDidUpdate() {}
 
   getSnapshotBeforeUpdate(prevProps) {
+    if (this.state.muted) return null;
+
     const nextSequenceStepReceived =
       prevProps.step !== this.props.step && this.props.step >= 0;
 
-    if (!this.props.active && prevProps.active) {
+    const didStopSequencer = !this.props.active && prevProps.active;
+
+    const shouldStop = didStopSequencer;
+
+    if (shouldStop) {
       this.speechGenerator.interrupt();
-      clearTimeout(nextSpeechTimeoutId);
+      clearTimeout(this.nextSpeechTimeoutId);
       this.setState({
         currentLine: '',
       });
+      return null;
     }
 
     if (nextSequenceStepReceived && this.state.lines.length > 0) {
@@ -79,7 +94,7 @@ export default class Speech extends Component {
         const sequenceTime = this.props.stepTime * this.state.sequenceLength;
         const delayTime = sequenceTime - this.state.timingOffset;
 
-        nextSpeechTimeoutId = setTimeout(() => {
+        this.nextSpeechTimeoutId = setTimeout(() => {
           if (currentLine) {
             this.speechGenerator.interrupt();
             const voice = this.state.voices[this.state.selectedVoiceIndex];
@@ -115,7 +130,7 @@ export default class Speech extends Component {
   };
 
   handleTimingChange = e => {
-    const timingOffset = TIMING_MAX_VALUE - parseInt(e.target.value);
+    const timingOffset = parseInt(e.target.value);
     this.setState({ timingOffset });
   };
 
@@ -152,7 +167,7 @@ export default class Speech extends Component {
     const { currentLine } = this.state;
 
     return (
-      <ModuleContainer>
+      <ModuleContainer disabled={this.state.muted}>
         <Container>
           <SpeechControls>
             <select
@@ -169,6 +184,7 @@ export default class Speech extends Component {
             <SlideControl>
               <label>Timing</label>
               <input
+                style={{ direction: 'rtl' }}
                 type="range"
                 onChange={this.handleTimingChange}
                 onDoubleClick={this.resetTiming}

@@ -12,6 +12,7 @@ import SampleBank from './modules/sampleBank';
 const bus = mitt();
 
 const KNOB_THROTTLE_TIME = 100;
+const KNOB_CHANGE_TIME = 30 / 1000; // seconds
 const MIN_TEMPO = 40;
 const MAX_TEMPO = 240;
 
@@ -153,16 +154,16 @@ class App extends PureComponent {
         bus.emit('TRANSPOSE_LINES', ({ value: -normValue + 0.5 }));
         break;
       case 6: // drums volume
-        this.props.audioMixer.drumsVolume.gain.setTargetAtTime(normValue, 0, 0.1);
+        this.props.audioMixer.drumsVolume.gain.setTargetAtTime(normValue, 0, KNOB_CHANGE_TIME);
         break;
       case 7: // lines volume
-        this.props.audioMixer.linesVolume.gain.setTargetAtTime(normValue, 0, 0.1);
+        this.props.audioMixer.linesVolume.gain.setTargetAtTime(normValue, 0, KNOB_CHANGE_TIME);
         break;
       case 8: // synth volume
-        this.props.audioMixer.synthVolume.gain.setTargetAtTime(normValue, 0, 0.1);
+        this.props.audioMixer.synthVolume.gain.setTargetAtTime(normValue, 0, KNOB_CHANGE_TIME);
         break;
       case 9: // master volume
-        this.props.audioMixer.masterGain.gain.setTargetAtTime(normValue * 0.1, 0, 0.01);
+        this.props.audioMixer.masterGain.gain.setTargetAtTime(normValue * 0.1, 0, KNOB_CHANGE_TIME);
         break;
       case 10: // sample 1
         if (value === 127) {
@@ -216,6 +217,10 @@ class App extends PureComponent {
       case 21: // drum mute (kick)
         bus.emit('TOGGLE_DRUM_MUTE', { drumIndex: 3 });
         break;
+      case 22: // drum speech
+        bus.emit('TOGGLE_SPEECH_MUTE', { muted: value === 127 });
+        break;
+
       case 37: // play / stop
         if (value === 127) {
           this.state.active ? this.stopSequence() : this.startSequence();
@@ -268,6 +273,7 @@ class App extends PureComponent {
             audioMixer={audioMixer}
             active={active}
             patternIndex={patternIndex}
+            bus={bus}
           />
           <Midi audioMixer={audioMixer} onControlSignal={this.handleControlSignal} />
         </InstrumentRack>
