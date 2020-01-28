@@ -62,6 +62,7 @@ export default ({ audioMixer, bus }) => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
+    // eslint-disable-next-line
   }, []);
 
   const triggerSample = ({ src, volume }) => () => {

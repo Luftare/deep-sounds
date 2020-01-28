@@ -10,7 +10,6 @@ import SpeechGenerator from './SpeechGenerator';
 import { ModuleContainer } from '../../components';
 
 let keyCounter = 1;
-let nextSpeechTimeoutId = null;
 
 const TIMING_MAX_VALUE = 200;
 const TIMING_MIN_VALUE = 0;
